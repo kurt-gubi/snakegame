@@ -26,11 +26,26 @@ class SnakeEngine(object):
         self.new_game(rows, columns, n_apples)
 
     def new_game(self, rows, columns, n_apples):
+        # make board
         self.board = [[Squares.EMPTY for x in xrange(columns)] for y in xrange(rows)]
         for i in xrange(n_apples):
             x = random.randint(0, columns - 1)
             y = random.randint(0, rows - 1)
             self.board[y][x] = Squares.APPLE
+
+        # make board surface
+        board_aspect = columns / rows
+        screen_aspect = self.width / self.height
+        if board_aspect > screen_aspect:
+            # restrict width
+            self.board_width = self.width
+            self.board_height = self.board_width / board_aspect
+        else:
+            # restrict height
+            self.board_height = self.height
+            self.board_width = self.board_height * board_aspect
+
+        self.surface = pygame.Surface((self.board_width, self.board_height))
 
     def add_bot(self, name, bot):
         """
@@ -51,19 +66,8 @@ class SnakeEngine(object):
         assert rows > 0
         columns = len(self.board[0])
 
-        board_aspect = columns / rows
-        screen_aspect = self.width / self.height
-        if board_aspect > screen_aspect:
-            # restrict width
-            width = self.width
-            height = width / board_aspect
-        else:
-            # restrict height
-            height = self.height
-            width = height * board_aspect
-
-        xscale = width / columns
-        yscale = height / rows
+        xscale = self.board_width / columns
+        yscale = self.board_height / rows
 
         for y, row in enumerate(self.board):
             for x, cell in enumerate(row):
@@ -72,11 +76,19 @@ class SnakeEngine(object):
                 w = int((x + 1) * xscale) - left
                 h = int((y + 1) * yscale) - top
                 r = Rect(left, top, w, h)
-                pygame.draw.rect(self.screen, self.EDGE_COLOR, r,
+                pygame.draw.rect(self.surface, self.EDGE_COLOR, r,
                                  self.EDGE_WIDTH)
 
     def run(self):
+        # Draw the grid.
         self.draw_board()
+
+        # Center the board.
+        x = (self.width - self.board_width) / 2
+        y = (self.height - self.board_height) / 2
+        self.screen.blit(self.surface, (x, y))
+
+        # Update the display.
         pygame.display.flip()
 
 if __name__ == '__main__':
