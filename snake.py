@@ -1,9 +1,11 @@
+from __future__ import division
 import random
 
 from common import *
 
 import pygame
 pygame.init()
+from pygame.locals import *
 
 class SnakeEngine(object):
     def __init__(self, rows, columns, n_apples, width=800, height=600, fullscreen=False):
@@ -12,6 +14,9 @@ class SnakeEngine(object):
         if fullscreen:
             flags |= pygame.FULLSCREEN
         pygame.display.set_mode((width, height), flags)
+
+        self.width = width
+        self.height = height
 
         self.bots = {}
 
@@ -38,9 +43,37 @@ class SnakeEngine(object):
     def remove_bot(self, name):
         del self.bots[name]
 
+    def draw_board(self):
+        rows = len(self.board)
+        assert rows > 0
+        columns = len(self.board[0])
+
+        board_aspect = columns / rows
+        screen_aspect = self.width / self.height
+        if board_aspect > screen_aspect:
+            # restrict width
+            width = self.width
+            height = width / board_aspect
+        else:
+            # restrict height
+            height = self.height
+            width = height * board_aspect
+
+        xscale = width / columns
+        yscale = height / rows
+
+        for y, row in enumerate(self.board):
+            for x, cell in enumerate(row):
+                r = Rect(y * yscale, x * xscale, xscale, yscale)
+                print r
+
     def run(self):
-        pass
+        self.draw_board()
 
 if __name__ == '__main__':
-    game = SnakeEngine(8, 16, 10)
+    from bots import random_bot
+
+    game = SnakeEngine(16, 8, 10)
+    game.add_bot('Bob', random_bot)
+    game.run()
 
