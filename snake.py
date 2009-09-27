@@ -8,12 +8,15 @@ pygame.init()
 from pygame.locals import *
 
 class SnakeEngine(object):
+    EDGE_COLOR = (255, 255, 255)
+    EDGE_WIDTH = 1
+
     def __init__(self, rows, columns, n_apples, width=800, height=600, fullscreen=False):
         super(SnakeEngine, self).__init__()
         flags = 0
         if fullscreen:
             flags |= pygame.FULLSCREEN
-        pygame.display.set_mode((width, height), flags)
+        self.screen = pygame.display.set_mode((width, height), flags)
 
         self.width = width
         self.height = height
@@ -64,16 +67,22 @@ class SnakeEngine(object):
 
         for y, row in enumerate(self.board):
             for x, cell in enumerate(row):
-                r = Rect(y * yscale, x * xscale, xscale, yscale)
-                print r
+                left = int(x * xscale)
+                top = int(y * yscale)
+                w = int((x + 1) * xscale) - left
+                h = int((y + 1) * yscale) - top
+                r = Rect(left, top, w, h)
+                pygame.draw.rect(self.screen, self.EDGE_COLOR, r,
+                                 self.EDGE_WIDTH)
 
     def run(self):
         self.draw_board()
+        pygame.display.flip()
 
 if __name__ == '__main__':
     from bots import random_bot
 
-    game = SnakeEngine(16, 8, 10)
+    game = SnakeEngine(8, 16, 10)
     game.add_bot('Bob', random_bot)
     game.run()
 
