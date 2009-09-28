@@ -53,6 +53,13 @@ class SnakeEngine(object):
         y = randint(0, self.rows - 1)
         return (x, y)
 
+    def replace_random(self, old, new):
+        for i in xrange(self.rows * self.columns):
+            x, y = self.get_random_position()
+            if self.board[y][x] == old:
+                self.board[y][x] = new
+                return x, y
+
     def new_game(self, rows, columns, n_apples):
         self.rows = rows
         self.columns = columns
@@ -91,16 +98,12 @@ class SnakeEngine(object):
         """
         letter = self.letters.pop()
 
-        for i in xrange(self.rows * self.columns):
-            x, y = self.get_random_position()
-            if self.board[y][x] == Squares.EMPTY:
-                break
-        else:
+        position = self.replace_random(Squares.EMPTY, letter.upper())
+        if position is None:
             raise KeyError, "Could not insert snake into the board."
 
         colour = (randint(0, 255), randint(0, 255), randint(0, 255))
-        self.bots[letter] = [bot, colour, deque([(x, y)])]
-        self.board[y][x] = letter.upper()
+        self.bots[letter] = [bot, colour, deque([position])]
         return letter
 
     def remove_bot(self, letter):
@@ -175,7 +178,10 @@ class SnakeEngine(object):
                     # Make old head into body.
                     self.board[y][x] = letter.lower()
 
-                    if oldcell != Squares.APPLE:
+                    if oldcell == Squares.APPLE:
+                        # Add in an apple to compensate.
+                        self.replace_random(Squares.EMPTY, Squares.APPLE)
+                    else:
                         # Remove last part of snake.
                         ox, oy = path.popleft()
                         self.board[oy][ox] = Squares.EMPTY
