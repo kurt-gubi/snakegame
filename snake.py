@@ -141,18 +141,14 @@ class SnakeEngine(object):
                     if cell.isupper(): # Snake head
                         self.surface.blit(self.eyes, r.topleft)
 
-    def update_snakes(self):
-        directions = {
-            'U': (0, -1),
-            'D': (0, 1),
-            'L': (-1, 0),
-            'R': (1, 0),
-        }
+    def update_snakes(self, directions_id=id(directions)):
+        assert id(directions) == directions_id, \
+            "The common.directions dictionary has been modified since startup..."
 
         for letter, (bot, colour, path) in self.bots.items():
             board = deepcopy(self.board)
             try:
-                x, y = path[0]
+                x, y = path[-1]
                 d = bot(board, (x, y))
 
                 # Sanity checking...
@@ -165,6 +161,10 @@ class SnakeEngine(object):
                 dx, dy = directions[d]
                 nx = x + dx
                 ny = y + dy
+
+                if ny < 0 or ny >= self.rows or nx < 0 or nx >= self.columns:
+                    self.remove_bot(letter)
+                    continue
 
                 oldcell = self.board[ny][nx]
                 if oldcell in (Squares.EMPTY, Squares.APPLE):
@@ -215,7 +215,7 @@ class SnakeEngine(object):
 
             # Update the display.
             pygame.display.flip()
-            clock.tick(40)
+            clock.tick(5)
 
             # Let the snakes move!
             self.update_snakes()
@@ -224,9 +224,9 @@ class SnakeEngine(object):
         pygame.display.quit()
 
 if __name__ == '__main__':
-    from bots import random_bot
+    from bots import *
 
     game = SnakeEngine(25, 25, 10)
-    game.add_bot(random_bot)
+    game.add_bot(right_bot)
     game.run()
 
