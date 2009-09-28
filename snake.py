@@ -1,4 +1,6 @@
 from __future__ import division
+
+import string
 import random
 
 from common import *
@@ -6,6 +8,19 @@ from common import *
 import pygame
 pygame.init()
 from pygame.locals import *
+
+def scale_aspect((source_width, source_height), (target_width, target_height)):
+    source_aspect = source_width / source_height
+    target_aspect = target_width / target_height
+    if source_aspect > target_aspect:
+        # restrict width
+        width = target_width
+        height = width / source_aspect
+    else:
+        # restrict height
+        height = target_height
+        width = height * source_aspect
+    return (width, height)
 
 class SnakeEngine(object):
     EDGE_COLOR = (255, 255, 255)
@@ -21,33 +36,43 @@ class SnakeEngine(object):
         self.width = width
         self.height = height
 
+        self.letters = list(string.lowercase)
+        self.letters.reverse()
+
         self.bots = {}
 
         self.new_game(rows, columns, n_apples)
 
+    def get_random_position(self):
+        x = random.randint(0, self.columns - 1)
+        y = random.randint(0, self.rows - 1)
+        return (x, y)
+
     def new_game(self, rows, columns, n_apples):
+        self.rows = rows
+        self.columns = columns
+
         # make board
         self.board = [[Squares.EMPTY for x in xrange(columns)] for y in xrange(rows)]
         for i in xrange(n_apples):
-            x = random.randint(0, columns - 1)
-            y = random.randint(0, rows - 1)
+            x, y = self.get_random_position()
             self.board[y][x] = Squares.APPLE
 
         # make board surface
-        board_aspect = columns / rows
-        screen_aspect = self.width / self.height
-        if board_aspect > screen_aspect:
-            # restrict width
-            self.board_width = self.width
-            self.board_height = self.board_width / board_aspect
-        else:
-            # restrict height
-            self.board_height = self.height
-            self.board_width = self.board_height * board_aspect
-
+        self.board_width, self.board_height = scale_aspect(
+            (columns, rows), (self.width, self.height)
+        )
         self.surface = pygame.Surface((self.board_width, self.board_height))
 
-    def add_bot(self, name, bot):
+        # load sprites
+        xscale = self.board_width / self.columns
+        yscale = self.board_height / self.rows
+
+        image = Sprites.APPLE
+        new_size = scale_aspect(image.get_size(), (xscale, yscale))
+        self.apple = pygame.transform.smoothscale(image, new_size)
+
+    def add_bot(self, bot):
         """
         A bot is a callable object, with this method signature:
             def bot_callable(
@@ -56,19 +81,27 @@ class SnakeEngine(object):
                 ):
                 return random.choice('RULD')
         """
-        self.bots[name] = bot
+        letter = self.letters.pop()
+        self.bots[letter] = bot
 
-    def remove_bot(self, name):
-        del self.bots[name]
+        for i in xrange(self.rows * self.columns):
+            x, y = self.get_random_position()
+            if self.board[y][x] == Squares.EMPTY:
+                break
+        else:
+            raise KeyError, "Could not insert snake into the board."
+
+        self.board[y][x] = letter
+        return letter
+
+    def remove_bot(self, letter):
+        del self.bots[letter]
 
     def draw_board(self):
-        rows = len(self.board)
-        assert rows > 0
-        columns = len(self.board[0])
+        xscale = self.board_width / self.columns
+        yscale = self.board_height / self.rows
 
-        xscale = self.board_width / columns
-        yscale = self.board_height / rows
-
+        # Draw grid.
         for y, row in enumerate(self.board):
             for x, cell in enumerate(row):
                 left = int(x * xscale)
@@ -76,11 +109,17 @@ class SnakeEngine(object):
                 w = int((x + 1) * xscale) - left
                 h = int((y + 1) * yscale) - top
                 r = Rect(left, top, w, h)
+
+                # Draw a square.
                 pygame.draw.rect(self.surface, self.EDGE_COLOR, r,
                                  self.EDGE_WIDTH)
 
+                # Draw the things on the square.
+                if cell == Squares.APPLE:
+                    self.surface.blit(self.apple, r.topleft)
+
     def run(self):
-        # Draw the grid.
+        # Draw the board.
         self.draw_board()
 
         # Center the board.
@@ -95,6 +134,6 @@ if __name__ == '__main__':
     from bots import random_bot
 
     game = SnakeEngine(8, 16, 10)
-    game.add_bot('Bob', random_bot)
+    game.add_bot(random_bot)
     game.run()
 
