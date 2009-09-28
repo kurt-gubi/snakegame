@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from __future__ import division
 
 import string
@@ -68,9 +70,12 @@ class SnakeEngine(object):
         xscale = self.board_width / self.columns
         yscale = self.board_height / self.rows
 
-        image = Sprites.APPLE
-        new_size = scale_aspect(image.get_size(), (xscale, yscale))
-        self.apple = pygame.transform.smoothscale(image, new_size)
+        def load_image(image):
+            new_size = scale_aspect(image.get_size(), (xscale, yscale))
+            return pygame.transform.smoothscale(image, new_size)
+
+        self.apple = load_image(Sprites.APPLE)
+        self.eyes = load_image(Sprites.EYES)
 
     def add_bot(self, bot):
         """
@@ -82,7 +87,6 @@ class SnakeEngine(object):
                 return random.choice('RULD')
         """
         letter = self.letters.pop()
-        self.bots[letter] = bot
 
         for i in xrange(self.rows * self.columns):
             x, y = self.get_random_position()
@@ -91,7 +95,9 @@ class SnakeEngine(object):
         else:
             raise KeyError, "Could not insert snake into the board."
 
-        self.board[y][x] = letter
+        colour = (255, 0, 0)
+        self.bots[letter] = (bot, (x, y), colour)
+        self.board[y][x] = letter.upper()
         return letter
 
     def remove_bot(self, letter):
@@ -117,6 +123,13 @@ class SnakeEngine(object):
                 # Draw the things on the square.
                 if cell == Squares.APPLE:
                     self.surface.blit(self.apple, r.topleft)
+
+                elif cell.isalpha(): # Snake...
+                    colour = self.bots[cell.lower()][2]
+                    self.surface.fill(colour, r)
+
+                    if cell.isupper(): # Snake head
+                        self.surface.blit(self.eyes, r.topleft)
 
     def run(self):
         # Draw the board.
