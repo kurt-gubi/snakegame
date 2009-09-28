@@ -235,13 +235,13 @@ class SnakeEngine(object):
 
 if __name__ == '__main__':
     from bots import *
-    from peter import *
+    from oldbot import BotWrapper
 
     game = SnakeEngine(25, 25, 50)
     game.add_bot(right_bot)
     game.add_bot(random_bot)
     game.add_bot(random_bounds_bot)
     game.add_bot(random_square_bot)
-    game.add_bot(peter_bot)
+    game.add_bot(BotWrapper('oldbots/peter.py'))
     game.run()
 
