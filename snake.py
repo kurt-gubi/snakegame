@@ -4,6 +4,8 @@ from __future__ import division
 
 import string
 import random
+from copy import deepcopy
+import traceback
 
 from common import *
 
@@ -96,11 +98,18 @@ class SnakeEngine(object):
             raise KeyError, "Could not insert snake into the board."
 
         colour = (255, 0, 0)
-        self.bots[letter] = (bot, (x, y), colour)
+        self.bots[letter] = [bot, (x, y), colour]
         self.board[y][x] = letter.upper()
         return letter
 
     def remove_bot(self, letter):
+        letter = letter.lower()
+
+        for row in self.board:
+            for x, cell in enumerate(row):
+                if cell.lower() == letter:
+                    row[x] = Squares.EMPTY
+
         del self.bots[letter]
 
     def draw_board(self):
@@ -131,22 +140,84 @@ class SnakeEngine(object):
                     if cell.isupper(): # Snake head
                         self.surface.blit(self.eyes, r.topleft)
 
+    def update_snakes(self):
+        directions = {
+            'U': (0, -1),
+            'D': (0, 1),
+            'L': (-1, 0),
+            'R': (1, 0),
+        }
+
+        for letter, (bot, (x, y), colour) in self.bots.items():
+            board = deepcopy(self.board)
+            try:
+                d = bot(board, (x, y))
+
+                # Sanity checking...
+                assert isinstance(d, basestring), \
+                    "Return value should be a string."
+                d = d.upper()
+                assert d in directions, "Return value should be 'U', 'D', 'L' or 'R'."
+
+                # Get new position.
+                dx, dy = directions[d]
+                nx = x + dx
+                ny = y + dy
+
+                oldcell = self.board[ny][nx]
+                if oldcell in (Squares.EMPTY, Squares.APPLE):
+                    self.board[ny][nx] = letter.upper()
+                    self.board[y][x] = letter.lower()
+
+                    self.bots[letter][1] = (nx, ny)
+                else:
+                    self.remove_bot(letter)
+
+            except:
+                print "Exception in bot %s (%s):" % (letter.upper(), bot)
+                print '-'*60
+                traceback.print_exc()
+                print '-'*60
+                self.remove_bot(letter)
+
     def run(self):
-        # Draw the board.
-        self.draw_board()
+        clock = pygame.time.Clock()
 
-        # Center the board.
-        x = (self.width - self.board_width) / 2
-        y = (self.height - self.board_height) / 2
-        self.screen.blit(self.surface, (x, y))
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT or \
+                   (event.type == pygame.KEYDOWN and event.key == K_ESCAPE):
+                    running = False
+                    break
+            if not running: break
 
-        # Update the display.
-        pygame.display.flip()
+            # Clear the screen.
+            self.screen.fill((0, 0, 0))
+            self.surface.fill((0, 0, 0))
+
+            # Draw the board.
+            self.draw_board()
+
+            # Center the board.
+            x = (self.width - self.board_width) / 2
+            y = (self.height - self.board_height) / 2
+            self.screen.blit(self.surface, (x, y))
+
+            # Update the display.
+            pygame.display.flip()
+            clock.tick(5)
+
+            # Let the snakes move!
+            self.update_snakes()
+
+        # Early window close, late process cleanup.
+        pygame.display.quit()
 
 if __name__ == '__main__':
     from bots import random_bot
 
-    game = SnakeEngine(8, 16, 10)
+    game = SnakeEngine(25, 25, 0)
     game.add_bot(random_bot)
     game.run()
 
