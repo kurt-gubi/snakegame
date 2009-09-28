@@ -4,6 +4,7 @@ from __future__ import division
 
 import string
 import random
+from collections import deque
 from copy import deepcopy
 import traceback
 
@@ -98,7 +99,7 @@ class SnakeEngine(object):
             raise KeyError, "Could not insert snake into the board."
 
         colour = (255, 0, 0)
-        self.bots[letter] = [bot, (x, y), colour]
+        self.bots[letter] = [bot, colour, deque([(x, y)])]
         self.board[y][x] = letter.upper()
         return letter
 
@@ -134,7 +135,7 @@ class SnakeEngine(object):
                     self.surface.blit(self.apple, r.topleft)
 
                 elif cell.isalpha(): # Snake...
-                    colour = self.bots[cell.lower()][2]
+                    colour = self.bots[cell.lower()][1]
                     self.surface.fill(colour, r)
 
                     if cell.isupper(): # Snake head
@@ -148,9 +149,10 @@ class SnakeEngine(object):
             'R': (1, 0),
         }
 
-        for letter, (bot, (x, y), colour) in self.bots.items():
+        for letter, (bot, colour, path) in self.bots.items():
             board = deepcopy(self.board)
             try:
+                x, y = path[0]
                 d = bot(board, (x, y))
 
                 # Sanity checking...
@@ -166,10 +168,17 @@ class SnakeEngine(object):
 
                 oldcell = self.board[ny][nx]
                 if oldcell in (Squares.EMPTY, Squares.APPLE):
+                    # Move snake forward.
                     self.board[ny][nx] = letter.upper()
+                    path.append((nx, ny))
+
+                    # Make old head into body.
                     self.board[y][x] = letter.lower()
 
-                    self.bots[letter][1] = (nx, ny)
+                    if oldcell != Squares.APPLE:
+                        # Remove last part of snake.
+                        ox, oy = path.popleft()
+                        self.board[oy][ox] = Squares.EMPTY
                 else:
                     self.remove_bot(letter)
 
@@ -206,7 +215,7 @@ class SnakeEngine(object):
 
             # Update the display.
             pygame.display.flip()
-            clock.tick(5)
+            clock.tick(40)
 
             # Let the snakes move!
             self.update_snakes()
@@ -217,7 +226,7 @@ class SnakeEngine(object):
 if __name__ == '__main__':
     from bots import random_bot
 
-    game = SnakeEngine(25, 25, 0)
+    game = SnakeEngine(25, 25, 10)
     game.add_bot(random_bot)
     game.run()
 
