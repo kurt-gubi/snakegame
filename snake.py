@@ -2,6 +2,7 @@
 
 from __future__ import division
 
+import time
 import string
 from random import randint
 from collections import deque
@@ -199,7 +200,7 @@ class SnakeEngine(object):
         clock = pygame.time.Clock()
 
         running = True
-        while running:
+        while running and self.bots:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or \
                    (event.type == pygame.KEYDOWN and event.key == K_ESCAPE):
@@ -226,16 +227,21 @@ class SnakeEngine(object):
             # Let the snakes move!
             self.update_snakes()
 
+        if running:
+            time.sleep(2)
+
         # Early window close, late process cleanup.
         pygame.display.quit()
 
 if __name__ == '__main__':
     from bots import *
+    from peter import *
 
     game = SnakeEngine(25, 25, 50)
     game.add_bot(right_bot)
     game.add_bot(random_bot)
     game.add_bot(random_bounds_bot)
     game.add_bot(random_square_bot)
+    game.add_bot(peter_bot)
     game.run()
 
