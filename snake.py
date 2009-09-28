@@ -3,7 +3,7 @@
 from __future__ import division
 
 import string
-import random
+from random import randint
 from collections import deque
 from copy import deepcopy
 import traceback
@@ -49,8 +49,8 @@ class SnakeEngine(object):
         self.new_game(rows, columns, n_apples)
 
     def get_random_position(self):
-        x = random.randint(0, self.columns - 1)
-        y = random.randint(0, self.rows - 1)
+        x = randint(0, self.columns - 1)
+        y = randint(0, self.rows - 1)
         return (x, y)
 
     def new_game(self, rows, columns, n_apples):
@@ -98,7 +98,7 @@ class SnakeEngine(object):
         else:
             raise KeyError, "Could not insert snake into the board."
 
-        colour = (255, 0, 0)
+        colour = (randint(0, 255), randint(0, 255), randint(0, 255))
         self.bots[letter] = [bot, colour, deque([(x, y)])]
         self.board[y][x] = letter.upper()
         return letter
@@ -215,7 +215,7 @@ class SnakeEngine(object):
 
             # Update the display.
             pygame.display.flip()
-            clock.tick(5)
+            clock.tick(20)
 
             # Let the snakes move!
             self.update_snakes()
@@ -226,7 +226,10 @@ class SnakeEngine(object):
 if __name__ == '__main__':
     from bots import *
 
-    game = SnakeEngine(25, 25, 10)
+    game = SnakeEngine(25, 25, 50)
     game.add_bot(right_bot)
+    game.add_bot(random_bot)
+    game.add_bot(random_bounds_bot)
+    game.add_bot(random_square_bot)
     game.run()
 
