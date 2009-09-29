@@ -4,24 +4,11 @@ from __future__ import division
 
 import time
 
-import pygame
-pygame.init()
-from pygame.locals import *
+import pyglet
+pyglet.resource.path = ['images']
+pyglet.resource.reindex()
 
 from snake import SnakeEngine
-
-class Sprites(object):
-    PREFIX = 'images'
-    def __getattribute__(self, name):
-        try:
-            return object.__getattribute__(self, name.upper())
-        except AttributeError:
-            from pygame.image import load
-            filename = os.path.join(self.PREFIX, name.lower() + ".png")
-            image = load(filename).convert_alpha()
-            setattr(self, name, image)
-            return image
-Sprites = Sprites()
 
 def scale_aspect((source_width, source_height), (target_width, target_height)):
     source_aspect = source_width / source_height
@@ -36,42 +23,41 @@ def scale_aspect((source_width, source_height), (target_width, target_height)):
         width = height * source_aspect
     return (width, height)
 
-class PygameSnakeEngine(SnakeEngine):
-    EDGE_COLOR = (255, 255, 255)
+class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
+    EDGE_COLOR = (255, 255, 255, 255)
     EDGE_WIDTH = 1
 
-    def __init__(self, rows, columns, n_apples, width=800, height=600, fullscreen=False):
-        flags = 0
-        if fullscreen:
-            flags |= pygame.FULLSCREEN
-        self.screen = pygame.display.set_mode((width, height), flags)
+    def __init__(self, rows, columns, n_apples):
+        super(PygletSnakeEngine, self).__init__(rows, columns, n_apples)
 
-        self.width = width
-        self.height = height
-
-        super(PygameSnakeEngine, self).__init__(rows, columns, n_apples)
+        pyglet.clock.schedule_interval(lambda t: self.update_snakes(), 0.025)
 
     def new_game(self, rows, columns, n_apples):
-        super(PygameSnakeEngine, self).new_game(rows, columns, n_apples)
+        super(PygletSnakeEngine, self).new_game(rows, columns, n_apples)
 
         # make board surface
         self.board_width, self.board_height = scale_aspect(
             (columns, rows), (self.width, self.height)
         )
-        self.surface = pygame.Surface((self.board_width, self.board_height))
 
         # load sprites
         xscale = self.board_width / self.columns
         yscale = self.board_height / self.rows
 
-        def load_image(image):
-            new_size = scale_aspect(image.get_size(), (xscale, yscale))
-            return pygame.transform.smoothscale(image, new_size)
+        self.apple = pyglet.resource.image('apple.png')
+        self.apple.size = scale_aspect(
+            (self.apple.width, self.apple.height),
+            (xscale, yscale)
+        )
+        self.eyes = pyglet.resource.image('eyes.png')
+        self.eyes.size = scale_aspect(
+            (self.eyes.width, self.eyes.height),
+            (xscale, yscale)
+        )
 
-        self.apple = load_image(Sprites.APPLE)
-        self.eyes = load_image(Sprites.EYES)
+    def on_draw(self):
+        self.clear()
 
-    def draw_board(self):
         xscale = self.board_width / self.columns
         yscale = self.board_height / self.rows
 
@@ -80,24 +66,28 @@ class PygameSnakeEngine(SnakeEngine):
             for x, cell in enumerate(row):
                 left = int(x * xscale)
                 top = int(y * yscale)
-                w = int((x + 1) * xscale) - left
-                h = int((y + 1) * yscale) - top
-                r = Rect(left, top, w, h)
+                right = int((x + 1) * xscale)
+                bottom = int((y + 1) * yscale)
+                r = (left, top, right, top, right, bottom, left, bottom)
 
                 # Draw a square.
-                pygame.draw.rect(self.surface, self.EDGE_COLOR, r,
-                                 self.EDGE_WIDTH)
+# width = self.EDGE_WIDTH
+                pyglet.graphics.draw(4, pyglet.gl.GL_LINE_LOOP,
+                                     ('v2f', r),
+                                     ('c4B', self.EDGE_COLOR * 4))
 
                 # Draw the things on the square.
                 if cell == Squares.APPLE:
-                    self.surface.blit(self.apple, r.topleft)
+                    w, h = self.apple.size
+                    self.apple.blit(top, left, width=w, height=h)
 
                 elif cell.isalpha(): # Snake...
                     colour = self.bots[cell.lower()][1]
-                    self.surface.fill(colour, r)
+#                    self.surface.fill(colour, r)
 
                     if cell.isupper(): # Snake head
-                        self.surface.blit(self.eyes, r.topleft)
+                        w, h = self.eyes.size
+                        self.eyes.blit(top, left, width=w, height=h)
 
     def run(self):
         clock = pygame.time.Clock()
@@ -140,11 +130,11 @@ if __name__ == '__main__':
     from bots import *
     from oldbot import BotWrapper
 
-    game = PygameSnakeEngine(25, 25, 50)
+    game = PygletSnakeEngine(25, 25, 50)
     game.add_bot(right_bot)
     game.add_bot(random_bot)
     game.add_bot(random_bounds_bot)
     game.add_bot(random_square_bot)
     game.add_bot(BotWrapper('oldbots/peter.py'))
-    game.run()
+    pyglet.app.run()
 
