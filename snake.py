@@ -88,7 +88,7 @@ class SnakeEngine(object):
         self.apple = load_image(Sprites.APPLE)
         self.eyes = load_image(Sprites.EYES)
 
-    def add_bot(self, bot):
+    def add_bot(self, bot, colour=None):
         """
         A bot is a callable object, with this method signature:
             def bot_callable(
@@ -103,7 +103,8 @@ class SnakeEngine(object):
         if position is None:
             raise KeyError, "Could not insert snake into the board."
 
-        colour = (randint(0, 255), randint(0, 255), randint(0, 255))
+        if colour is None:
+            colour = (randint(0, 255), randint(0, 255), randint(0, 255))
         self.bots[letter] = [bot, colour, deque([position])]
         return letter
 

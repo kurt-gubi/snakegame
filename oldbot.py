@@ -23,7 +23,7 @@ class BotWrapper(object):
         proc.stdin.close()
         proc.wait()
 
-        if proc.returncode == 0:
-            output = proc.stdout.read()
+        assert proc.returncode == 0, 'Snake died.'
+        output = proc.stdout.read()
         return output.strip()
 
