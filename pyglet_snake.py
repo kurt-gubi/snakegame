@@ -67,13 +67,12 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
         for y, row in enumerate(self.board):
             for x, cell in enumerate(row):
                 left = int(x * xscale)
-                top = int(y * yscale)
+                top = self.height - int(y * yscale)
                 right = int((x + 1) * xscale)
-                bottom = int((y + 1) * yscale)
+                bottom = self.height - int((y + 1) * yscale)
                 r = (left, top, right, top, right, bottom, left, bottom)
 
                 # Draw a square.
-# width = self.EDGE_WIDTH
                 glLineWidth(self.EDGE_WIDTH)
                 pyglet.graphics.draw(4, GL_LINE_LOOP,
                                      ('v2f', r),
@@ -82,7 +81,7 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
                 # Draw the things on the square.
                 if cell == Squares.APPLE:
                     w, h = self.apple.size
-                    self.apple.blit(left, top, width=w, height=h)
+                    self.apple.blit(left + (xscale - w) / 2.0, top - h, width=w, height=h)
 
                 elif cell.isalpha(): # Snake...
                     colour = self.bots[cell.lower()][1] + (255,)
@@ -91,11 +90,10 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
                                          ('v2f', r),
                                          ('c4B', colour * 4),
                     )
-#                    self.surface.fill(colour, r)
 
                     if cell.isupper(): # Snake head
                         w, h = self.eyes.size
-                        self.eyes.blit(left, top, width=w, height=h)
+                        self.eyes.blit(left, top - h, width=w, height=h)
 
     def update_snakes(self, *args):
         if not self.bots:
