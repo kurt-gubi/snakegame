@@ -8,6 +8,8 @@ import pyglet
 pyglet.resource.path = ['images']
 pyglet.resource.reindex()
 
+from pyglet.gl import *
+
 from snake import SnakeEngine
 
 def scale_aspect((source_width, source_height), (target_width, target_height)):
@@ -25,7 +27,7 @@ def scale_aspect((source_width, source_height), (target_width, target_height)):
 
 class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
     EDGE_COLOR = (255, 255, 255, 255)
-    EDGE_WIDTH = 1
+    EDGE_WIDTH = 2
 
     def __init__(self, rows, columns, n_apples):
         super(PygletSnakeEngine, self).__init__(rows, columns, n_apples)
@@ -72,22 +74,28 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
 
                 # Draw a square.
 # width = self.EDGE_WIDTH
-                pyglet.graphics.draw(4, pyglet.gl.GL_LINE_LOOP,
+                glLineWidth(self.EDGE_WIDTH)
+                pyglet.graphics.draw(4, GL_LINE_LOOP,
                                      ('v2f', r),
                                      ('c4B', self.EDGE_COLOR * 4))
 
                 # Draw the things on the square.
                 if cell == Squares.APPLE:
                     w, h = self.apple.size
-                    self.apple.blit(top, left, width=w, height=h)
+                    self.apple.blit(left, top, width=w, height=h)
 
                 elif cell.isalpha(): # Snake...
-                    colour = self.bots[cell.lower()][1]
+                    colour = self.bots[cell.lower()][1] + (255,)
+                    glPolygonMode(GL_FRONT, GL_FILL)
+                    pyglet.graphics.draw(4, GL_POLYGON,
+                                         ('v2f', r),
+                                         ('c4B', colour * 4),
+                    )
 #                    self.surface.fill(colour, r)
 
                     if cell.isupper(): # Snake head
                         w, h = self.eyes.size
-                        self.eyes.blit(top, left, width=w, height=h)
+                        self.eyes.blit(left, top, width=w, height=h)
 
     def run(self):
         clock = pygame.time.Clock()
