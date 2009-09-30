@@ -97,42 +97,10 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
                         w, h = self.eyes.size
                         self.eyes.blit(left, top, width=w, height=h)
 
-    def run(self):
-        clock = pygame.time.Clock()
-
-        running = True
-        while running and self.bots:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT or \
-                   (event.type == pygame.KEYDOWN and event.key == K_ESCAPE):
-                    running = False
-                    break
-            if not running: break
-
-            # Clear the screen.
-            self.screen.fill((0, 0, 0))
-            self.surface.fill((0, 0, 0))
-
-            # Draw the board.
-            self.draw_board()
-
-            # Center the board.
-            x = (self.width - self.board_width) / 2
-            y = (self.height - self.board_height) / 2
-            self.screen.blit(self.surface, (x, y))
-
-            # Update the display.
-            pygame.display.flip()
-            clock.tick(20)
-
-            # Let the snakes move!
-            self.update_snakes()
-
-        if running:
-            time.sleep(2)
-
-        # Early window close, late process cleanup.
-        pygame.display.quit()
+    def update_snakes(self, *args):
+        if not self.bots:
+            pyglet.app.exit()
+        super(PygletSnakeEngine, self).update_snakes(*args)
 
 if __name__ == '__main__':
     from bots import *
