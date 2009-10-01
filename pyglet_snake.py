@@ -10,6 +10,7 @@ pyglet.resource.reindex()
 
 from pyglet.gl import *
 
+from common import *
 from snake import SnakeEngine
 
 def scale_aspect((source_width, source_height), (target_width, target_height)):
@@ -103,6 +104,9 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
             pyglet.app.exit()
         super(PygletSnakeEngine, self).update_snakes(*args)
 
+    def run(self):
+        pyglet.app.run()
+
 if __name__ == '__main__':
     from bots import *
     from oldbot import BotWrapper
@@ -113,5 +117,5 @@ if __name__ == '__main__':
     game.add_bot(random_bounds_bot)
     game.add_bot(random_square_bot)
     game.add_bot(BotWrapper('oldbots/peter.py'))
-    pyglet.app.run()
+    game.run()
 
