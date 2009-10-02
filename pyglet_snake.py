@@ -30,8 +30,8 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
     EDGE_COLOR = (255, 255, 255, 255)
     EDGE_WIDTH = 2
 
-    def __init__(self, rows, columns, n_apples):
-        super(PygletSnakeEngine, self).__init__(rows, columns, n_apples)
+    def __init__(self, rows, columns, n_apples, *args, **kwargs):
+        super(PygletSnakeEngine, self).__init__(rows, columns, n_apples, *args, **kwargs)
 
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)

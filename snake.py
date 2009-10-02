@@ -2,6 +2,7 @@
 
 from __future__ import division
 
+import time
 import string
 from random import randint
 from collections import deque
@@ -11,13 +12,16 @@ import traceback
 from common import *
 
 class SnakeEngine(object):
-    def __init__(self, rows, columns, n_apples):
+    def __init__(self, rows, columns, n_apples, results=False):
         super(SnakeEngine, self).__init__()
 
         self.letters = list(string.lowercase)
         self.letters.reverse()
 
         self.bots = {}
+        self.results = None
+        if results:
+            self.results = open('results.csv', 'a+')
 
         self.new_game(rows, columns, n_apples)
 
@@ -34,6 +38,8 @@ class SnakeEngine(object):
                 return x, y
 
     def new_game(self, rows, columns, n_apples):
+        self.start_time = time.time()
+
         self.rows = rows
         self.columns = columns
 
@@ -66,12 +72,26 @@ class SnakeEngine(object):
     def remove_bot(self, letter):
         letter = letter.lower()
 
+        time_score = time.time() - self.start_time
+
         for row in self.board:
             for x, cell in enumerate(row):
                 if cell.lower() == letter:
                     row[x] = Squares.EMPTY
 
+        bot = self.bots[letter]
         del self.bots[letter]
+
+        if not self.results:
+            return
+
+        try:
+            name = bot[0].__name__
+        except AttributeError:
+            pass
+        else:
+            apple_score = len(bot[2])
+            self.results.write('%s,%s,%s\n' % (name, apple_score, time_score))
 
     def update_snakes(self, directions_id=id(directions)):
         assert id(directions) == directions_id, \
