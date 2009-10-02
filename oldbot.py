@@ -3,6 +3,7 @@ import subprocess
 class BotWrapper(object):
     def __init__(self, process):
         self.process = process
+        self.__name__ = process
 
     def __call__(self, board, (x, y)):
         height = len(board)

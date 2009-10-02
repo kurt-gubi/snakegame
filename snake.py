@@ -92,6 +92,7 @@ class SnakeEngine(object):
         else:
             apple_score = len(bot[2])
             self.results.write('%s,%s,%s\n' % (name, apple_score, time_score))
+            self.results.flush()
 
     def update_snakes(self, directions_id=id(directions)):
         assert id(directions) == directions_id, \
