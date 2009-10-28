@@ -6,6 +6,7 @@ import sys
 import time
 import string
 import random
+from colour import hash_colour
 from random import randint
 from collections import deque
 from copy import deepcopy
@@ -52,7 +53,7 @@ class SnakeEngine(object):
             x, y = self.get_random_position()
             self.board[y][x] = Squares.APPLE
 
-    def add_bot(self, bot, colour=None):
+    def add_bot(self, bot):
         """
         A bot is a callable object, with this method signature:
             def bot_callable(
@@ -63,12 +64,13 @@ class SnakeEngine(object):
         """
         letter = self.letters.pop()
 
+        name = bot.__name__
+        colour = hash_colour(name)
+
         position = self.replace_random(Squares.EMPTY, letter.upper())
         if position is None:
             raise KeyError, "Could not insert snake into the board."
 
-        if colour is None:
-            colour = (randint(0, 255), randint(0, 255), randint(0, 255))
         self.bots[letter] = [bot, colour, deque([position])]
         return letter
 
