@@ -2,8 +2,10 @@
 
 from __future__ import division
 
+import sys
 import time
 import string
+import random
 from random import randint
 from collections import deque
 from copy import deepcopy
@@ -17,6 +19,8 @@ class SnakeEngine(object):
 
         self.letters = list(string.lowercase)
         self.letters.reverse()
+
+        self.game_id = random.randint(0, sys.maxint)
 
         self.bots = {}
         self.results = None
@@ -91,7 +95,8 @@ class SnakeEngine(object):
             pass
         else:
             apple_score = len(bot[2])
-            self.results.write('%s,%s,%s\n' % (name, apple_score, time_score))
+            self.results.write('%s,%s,%s,%s\n' % \
+                (self.game_id, name, apple_score, time_score))
             self.results.flush()
 
     def update_snakes(self, directions_id=id(directions)):

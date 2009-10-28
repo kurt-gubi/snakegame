@@ -40,7 +40,9 @@ class PygameSnakeEngine(SnakeEngine):
     EDGE_COLOR = (255, 255, 255)
     EDGE_WIDTH = 1
 
-    def __init__(self, rows, columns, n_apples, width=800, height=600, fullscreen=False):
+    def __init__(self, rows, columns, n_apples,
+                 width=800, height=600, fullscreen=False,
+                 **kwargs):
         flags = 0
         if fullscreen:
             flags |= pygame.FULLSCREEN
@@ -49,7 +51,8 @@ class PygameSnakeEngine(SnakeEngine):
         self.width = width
         self.height = height
 
-        super(PygameSnakeEngine, self).__init__(rows, columns, n_apples)
+        super(PygameSnakeEngine, self).__init__(rows, columns, n_apples,
+                                                **kwargs)
 
     def new_game(self, rows, columns, n_apples):
         super(PygameSnakeEngine, self).new_game(rows, columns, n_apples)
@@ -140,11 +143,12 @@ if __name__ == '__main__':
     from bots import *
     from oldbot import BotWrapper
 
-    game = PygameSnakeEngine(25, 25, 50)
-    game.add_bot(right_bot)
-    game.add_bot(random_bot)
-    game.add_bot(random_bounds_bot)
-    game.add_bot(random_square_bot)
-    game.add_bot(BotWrapper('oldbots/peter.py'))
-    game.run()
+    while True:
+        game = PygameSnakeEngine(25, 25, 50, results=True)
+        game.add_bot(right_bot)
+        game.add_bot(random_bot)
+        game.add_bot(random_bounds_bot)
+        game.add_bot(random_square_bot)
+        game.add_bot(BotWrapper('oldbots/peter.py'))
+        game.run()
 
