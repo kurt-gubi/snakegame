@@ -39,7 +39,7 @@ def main():
             time_series.append(time)
             length_series.append(length)
 
-        colours.append('%2X%2X%2X' % hash_colour(name))
+        colours.append('%02X%02X%02X' % hash_colour(name))
 
         time_data.append(time_series)
         length_data.append(length_series)
