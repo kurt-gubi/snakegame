@@ -17,9 +17,6 @@ class SnakeEngine(object):
     def __init__(self, rows, columns, n_apples, results=False):
         super(SnakeEngine, self).__init__()
 
-        self.letters = list(string.lowercase)
-        self.letters.reverse()
-
         self.bots = {}
         self.results = None
         if results:
@@ -42,6 +39,9 @@ class SnakeEngine(object):
     def new_game(self, rows, columns, n_apples):
         self.start_time = time.time()
         self.game_id = random.randint(0, sys.maxint)
+
+        self.letters = list(string.lowercase)
+        self.letters.reverse()
 
         self.rows = rows
         self.columns = columns
