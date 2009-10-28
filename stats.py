@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
+import sys
 from collections import defaultdict
 from pygooglechart import SimpleLineChart
 from colour import hash_colour
 
-WIDTH = 600
-HEIGHT = 200
+WIDTH = 800
+HEIGHT = 300
 RESULTS_FILE = 'results.csv'
 
 def main():
@@ -46,12 +47,13 @@ def main():
 
     for filename, data in (('length_chart.png', length_data),
                            ('time_chart.png', time_data)):
-        chart = SimpleLineChart(WIDTH, HEIGHT, colours=colours)
+        chart = SimpleLineChart(WIDTH, HEIGHT, colours=colours, legend=snakes)
         for series in data:
             chart.add_data(series)
+        print 'Updating', filename, '... ',
+        sys.stdout.flush()
         chart.download(filename)
-
-    print 'Chart update!'
+        print 'done!'
 
 if __name__ == '__main__':
     main()
