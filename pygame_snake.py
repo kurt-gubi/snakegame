@@ -136,19 +136,25 @@ class PygameSnakeEngine(SnakeEngine):
         if running:
             time.sleep(2)
 
-        # Early window close, late process cleanup.
-        pygame.display.quit()
-
 if __name__ == '__main__':
     from bots import *
     from oldbot import BotWrapper
 
+    ROWS = 25
+    COLUMNS = 25
+    APPLES = 50
+    game = PygameSnakeEngine(ROWS, COLUMNS, APPLES, results=True)
+
     while True:
-        game = PygameSnakeEngine(25, 25, 50, results=True)
         game.add_bot(right_bot)
         game.add_bot(random_bot)
         game.add_bot(random_bounds_bot)
         game.add_bot(random_square_bot)
         game.add_bot(BotWrapper('oldbots/peter.py'))
         game.run()
+        game.new_game(ROWS, COLUMNS, APPLES)
+
+    # Early window close, late process cleanup.
+    pygame.display.quit()
+
 
