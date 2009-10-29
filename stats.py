@@ -2,7 +2,8 @@
 
 import sys
 from collections import defaultdict
-from pygooglechart import SimpleLineChart
+from pngchart import SimpleLineChart
+#from pygooglechart import SimpleLineChart
 from colour import hash_colour
 
 WIDTH = 800
