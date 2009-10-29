@@ -38,7 +38,7 @@ class SnakeEngine(object):
                 return x, y
 
     def new_game(self, rows, columns, n_apples):
-        self.start_time = time.time()
+        self.game_ticks = 0
         self.game_id = random.randint(0, sys.maxint)
 
         self.letters = list(string.lowercase)
@@ -77,7 +77,7 @@ class SnakeEngine(object):
     def remove_bot(self, letter):
         letter = letter.lower()
 
-        time_score = time.time() - self.start_time
+        time_score = self.game_ticks
 
         for row in self.board:
             for x, cell in enumerate(row):
@@ -103,6 +103,8 @@ class SnakeEngine(object):
     def update_snakes(self, directions_id=id(directions)):
         assert id(directions) == directions_id, \
             "The common.directions dictionary has been modified since startup..."
+
+        self.game_ticks += 1
 
         for letter, (bot, colour, path) in self.bots.items():
             board = deepcopy(self.board)
