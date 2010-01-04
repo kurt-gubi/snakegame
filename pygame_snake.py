@@ -2,12 +2,14 @@
 
 from __future__ import division
 
+import os
 import time
 
 import pygame
 pygame.init()
 from pygame.locals import *
 
+from common import *
 from snake import SnakeEngine
 
 class Sprites(object):
@@ -137,22 +139,15 @@ class PygameSnakeEngine(SnakeEngine):
             time.sleep(2)
 
 if __name__ == '__main__':
-    from bots import *
+    import sys
     from processbot import BotWrapper
 
-    ROWS = 25
-    COLUMNS = 25
-    APPLES = 50
-    game = PygameSnakeEngine(ROWS, COLUMNS, APPLES, results=True)
-
-    while True:
-        game.add_bot(right_bot)
-        game.add_bot(random_bot)
-        game.add_bot(random_bounds_bot)
-        game.add_bot(random_square_bot)
-        game.add_bot(BotWrapper('bots/peter.py'))
-        game.run()
-        game.new_game(ROWS, COLUMNS, APPLES)
+    rows, columns, apples = map(int, sys.argv[1:4])
+    game = PygameSnakeEngine(rows, columns, apples)
+    for filename in sys.argv[4:]:
+        bot = BotWrapper(filename)
+        game.add_bot(bot)
+    game.run()
 
     # Early window close, late process cleanup.
     pygame.display.quit()

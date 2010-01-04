@@ -108,13 +108,13 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
         pyglet.app.run()
 
 if __name__ == '__main__':
-    from bots import random_bounds_bot, random_square_bot
+    import sys
     from processbot import BotWrapper
 
-    game = PygletSnakeEngine(25, 25, 50, results=True)
-    game.add_bot(random_bounds_bot)
-    game.add_bot(random_square_bot)
-    for i in xrange(2):
-        game.add_bot(BotWrapper('bots/peter.py'))
+    rows, columns, apples = map(int, sys.argv[1:4])
+    game = PygletSnakeEngine(rows, columns, apples)
+    for filename in sys.argv[4:]:
+        bot = BotWrapper(filename)
+        game.add_bot(bot)
     game.run()
 

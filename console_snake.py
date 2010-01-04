@@ -58,15 +58,14 @@ class ConsoleSnakeEngine(SnakeEngine):
             self.update_snakes()
 
 def main(*args):
-    from bots import *
+    import sys
     from processbot import BotWrapper
 
-    game = ConsoleSnakeEngine(25, 25, 50)
-    game.add_bot(right_bot)
-    game.add_bot(random_bot)
-    game.add_bot(random_bounds_bot)
-    game.add_bot(random_square_bot)
-    game.add_bot(BotWrapper('bots/peter.py'))
+    rows, columns, apples = map(int, sys.argv[1:4])
+    game = ConsoleSnakeEngine(rows, columns, apples)
+    for filename in sys.argv[4:]:
+        bot = BotWrapper(filename)
+        game.add_bot(bot)
     game.run()
 
 if __name__ == '__main__':
