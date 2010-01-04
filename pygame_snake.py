@@ -138,7 +138,7 @@ class PygameSnakeEngine(SnakeEngine):
 
 if __name__ == '__main__':
     from bots import *
-    from oldbot import BotWrapper
+    from processbot import BotWrapper
 
     ROWS = 25
     COLUMNS = 25
@@ -150,7 +150,7 @@ if __name__ == '__main__':
         game.add_bot(random_bot)
         game.add_bot(random_bounds_bot)
         game.add_bot(random_square_bot)
-        game.add_bot(BotWrapper('oldbots/peter.py'))
+        game.add_bot(BotWrapper('bots/peter.py'))
         game.run()
         game.new_game(ROWS, COLUMNS, APPLES)
 

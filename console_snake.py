@@ -59,14 +59,14 @@ class ConsoleSnakeEngine(SnakeEngine):
 
 def main(*args):
     from bots import *
-    from oldbot import BotWrapper
+    from processbot import BotWrapper
 
     game = ConsoleSnakeEngine(25, 25, 50)
     game.add_bot(right_bot)
     game.add_bot(random_bot)
     game.add_bot(random_bounds_bot)
     game.add_bot(random_square_bot)
-    game.add_bot(BotWrapper('oldbots/peter.py'))
+    game.add_bot(BotWrapper('bots/peter.py'))
     game.run()
 
 if __name__ == '__main__':
