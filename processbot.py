@@ -1,3 +1,4 @@
+import sys
 import subprocess
 
 class BotWrapper(object):
@@ -27,4 +28,26 @@ class BotWrapper(object):
         assert proc.returncode == 0, 'Snake died.'
         output = proc.stdout.read()
         return output.strip()
+
+def process_input(fp=sys.stdin):
+    width, height, letter = fp.readline().split()
+
+    width = int(width)
+    height = int(height)
+    letter = letter.upper()
+
+    position = None
+
+    board = []
+    for i in xrange(height):
+        row = fp.readline()[:-1]
+        assert len(row) == width
+
+        pos = row.find(letter)
+        if pos >= 0:
+            position = (pos, i)
+
+        board.append(list(row))
+
+    return board, position
 
