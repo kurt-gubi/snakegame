@@ -15,9 +15,10 @@ import traceback
 from common import *
 
 class SnakeEngine(object):
-    def __init__(self, rows, columns, n_apples, results=False):
+    def __init__(self, rows, columns, n_apples, wrap=False, results=False):
         super(SnakeEngine, self).__init__()
 
+        self.wrap = wrap
         self.bots = {}
         self.results = None
         if results:
@@ -123,9 +124,13 @@ class SnakeEngine(object):
                 nx = x + dx
                 ny = y + dy
 
-                if ny < 0 or ny >= self.rows or nx < 0 or nx >= self.columns:
-                    self.remove_bot(letter)
-                    continue
+                if self.wrap:
+                    ny %= self.rows
+                    nx %= self.columns
+                else:
+                    if ny < 0 or ny >= self.rows or nx < 0 or nx >= self.columns:
+                        self.remove_bot(letter)
+                        continue
 
                 oldcell = self.board[ny][nx]
                 if oldcell in (Squares.EMPTY, Squares.APPLE):
