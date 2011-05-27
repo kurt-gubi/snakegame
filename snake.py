@@ -15,8 +15,9 @@ import traceback
 from common import *
 
 class SnakeEngine(object):
-    def __init__(self, rows, columns, n_apples, wrap=False, results=False):
-        super(SnakeEngine, self).__init__()
+    def __init__(self, rows, columns, n_apples, wrap=False, results=False,
+                 *args, **kwargs):
+        super(SnakeEngine, self).__init__(*args, **kwargs)
 
         self.wrap = wrap
         self.bots = {}
