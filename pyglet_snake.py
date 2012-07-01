@@ -2,15 +2,13 @@
 
 from __future__ import division
 
-import time
-
 import pyglet
 pyglet.resource.path = ['images']
 pyglet.resource.reindex()
 
-from pyglet.gl import *
+from pyglet import gl
 
-from common import *
+import common
 from snake import SnakeEngine
 
 def scale_aspect((source_width, source_height), (target_width, target_height)):
@@ -33,8 +31,8 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
     def __init__(self, rows, columns, n_apples, *args, **kwargs):
         super(PygletSnakeEngine, self).__init__(rows, columns, n_apples, *args, **kwargs)
 
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         pyglet.clock.schedule_interval(lambda t: self.update_snakes(), 0.025)
 
@@ -77,20 +75,20 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
                 r = (left, top, right, top, right, bottom, left, bottom)
 
                 # Draw a square.
-                glLineWidth(self.EDGE_WIDTH)
-                pyglet.graphics.draw(4, GL_LINE_LOOP,
+                gl.glLineWidth(self.EDGE_WIDTH)
+                pyglet.graphics.draw(4, gl.GL_LINE_LOOP,
                                      ('v2f', r),
                                      ('c4B', self.EDGE_COLOR * 4))
 
                 # Draw the things on the square.
-                if cell == Squares.APPLE:
+                if cell == common.Squares.APPLE:
                     w, h = self.apple.size
                     self.apple.blit(left + (xscale - w) / 2.0, top - h, width=w, height=h)
 
                 elif cell.isalpha(): # Snake...
                     colour = self.bots[cell.lower()][1] + (255,)
-                    glPolygonMode(GL_FRONT, GL_FILL)
-                    pyglet.graphics.draw(4, GL_POLYGON,
+                    gl.glPolygonMode(gl.GL_FRONT, gl.GL_FILL)
+                    pyglet.graphics.draw(4, gl.GL_POLYGON,
                                          ('v2f', r),
                                          ('c4B', colour * 4),
                     )
