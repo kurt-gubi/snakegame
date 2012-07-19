@@ -83,7 +83,7 @@ class Engine(object):
         for row in self.board:
             for x, cell in enumerate(row):
                 if cell.lower() == letter:
-                    row[x] = Squares.EMPTY
+                    row[x] = common.EMPTY
 
         bot = self.bots[letter]
         del self.bots[letter]

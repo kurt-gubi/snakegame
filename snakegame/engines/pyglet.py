@@ -32,7 +32,7 @@ class PygletEngine(Engine, pyglet.window.Window):
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
-        pyglet.clock.schedule_interval(lambda t: self.update_snakes(), 0.025)
+        pyglet.clock.schedule_interval(lambda t: self.update_snakes(), 1/30.0)
 
     def new_game(self, rows, columns, n_apples):
         super(PygletEngine, self).new_game(rows, columns, n_apples)
