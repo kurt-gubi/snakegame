@@ -7,23 +7,10 @@ from snakegame.engines.base import Engine
 
 BUILTIN_ENGINES = MaybeOrderedDict()
 
-try:
-    from snakegame.engines.pyglet import PygletEngine
-except ImportError:
-    pass
-else:
-    BUILTIN_ENGINES['pyglet'] = PygletEngine
+def add_engine(name):
+    class_name = name.title() + 'Engine'
+    BUILTIN_ENGINES[name] = 'snakegame.engines.%s:%s' % (name, class_name)
 
-try:
-    from snakegame.engines.pygame import PygameEngine
-except ImportError:
-    pass
-else:
-    BUILTIN_ENGINES['pygame'] = PygameEngine
-
-try:
-    from snakegame.engines.curses import CursesEngine
-except ImportError:
-    pass
-else:
-    BUILTIN_ENGINES['curses'] = CursesEngine
+add_engine('pyglet')
+add_engine('pygame')
+add_engine('curses')

@@ -1,20 +1,21 @@
-from __future__ import division
-
 import sys
-import time
 import string
 import random
-from colour import hash_colour
 from random import randint
 from collections import deque
 from copy import deepcopy
 import traceback
 
-from common import *
+from snakegame.colour import hash_colour
+from snakegame import common
 
 class Engine(object):
-    def __init__(self, rows, columns, n_apples, wrap=False, results=False,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        rows, columns, n_apples,
+        wrap=True, results=False,
+        *args, **kwargs
+    ):
         super(Engine, self).__init__(*args, **kwargs)
 
         self.wrap = wrap
@@ -48,10 +49,10 @@ class Engine(object):
         self.columns = columns
 
         # make board
-        self.board = [[Squares.EMPTY for x in xrange(columns)] for y in xrange(rows)]
+        self.board = [[common.EMPTY for x in xrange(columns)] for y in xrange(rows)]
         for i in xrange(n_apples):
             x, y = self.get_random_position()
-            self.board[y][x] = Squares.APPLE
+            self.board[y][x] = common.APPLE
 
     def add_bot(self, bot):
         """
@@ -67,7 +68,7 @@ class Engine(object):
         name = bot.__name__
         colour = hash_colour(name)
 
-        position = self.replace_random(Squares.EMPTY, letter.upper())
+        position = self.replace_random(common.EMPTY, letter.upper())
         if position is None:
             raise KeyError, "Could not insert snake into the board."
 
@@ -100,10 +101,7 @@ class Engine(object):
                 (self.game_id, name, apple_score, time_score))
             self.results.flush()
 
-    def update_snakes(self, directions_id=id(directions)):
-        assert id(directions) == directions_id, \
-            "The common.directions dictionary has been modified since startup..."
-
+    def update_snakes(self):
         self.game_ticks += 1
 
         for letter, (bot, colour, path) in self.bots.items():
@@ -116,10 +114,10 @@ class Engine(object):
                 assert isinstance(d, basestring), \
                     "Return value should be a string."
                 d = d.upper()
-                assert d in directions, "Return value should be 'U', 'D', 'L' or 'R'."
+                assert d in common.directions, "Return value should be 'U', 'D', 'L' or 'R'."
 
                 # Get new position.
-                dx, dy = directions[d]
+                dx, dy = common.directions[d]
                 nx = x + dx
                 ny = y + dy
 
@@ -132,7 +130,7 @@ class Engine(object):
                         continue
 
                 oldcell = self.board[ny][nx]
-                if oldcell in (Squares.EMPTY, Squares.APPLE):
+                if common.is_vacant(oldcell):
                     # Move snake forward.
                     self.board[ny][nx] = letter.upper()
                     path.append((nx, ny))
@@ -140,13 +138,13 @@ class Engine(object):
                     # Make old head into body.
                     self.board[y][x] = letter.lower()
 
-                    if oldcell == Squares.APPLE:
+                    if oldcell == common.APPLE:
                         # Add in an apple to compensate.
-                        self.replace_random(Squares.EMPTY, Squares.APPLE)
+                        self.replace_random(common.EMPTY, common.APPLE)
                     else:
                         # Remove last part of snake.
                         ox, oy = path.popleft()
-                        self.board[oy][ox] = Squares.EMPTY
+                        self.board[oy][ox] = common.EMPTY
                 else:
                     self.remove_bot(letter)
 

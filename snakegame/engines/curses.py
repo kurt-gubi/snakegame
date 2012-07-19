@@ -1,17 +1,19 @@
-#!/usr/bin/env python
-
-from __future__ import division
-
+import curses
+from functools import wraps
 import time
 
-import curses
+from snakegame import common
+from snakegame.engines import Engine
 
-from common import *
-from snake import SnakeEngine
+def curses_wrapper(fn):
+    @wraps(fn)
+    def deco(*args, **kwargs):
+        return curses.wrapper(fn, *args, **kwargs)
+    return deco
 
-class ConsoleSnakeEngine(SnakeEngine):
+class CursesEngine(Engine):
     def new_game(self, *args):
-        super(ConsoleSnakeEngine, self).new_game(*args)
+        super(CursesEngine, self).new_game(*args)
 
         self.window = curses.initscr()
         curses.start_color()
@@ -42,6 +44,7 @@ class ConsoleSnakeEngine(SnakeEngine):
 
                 self.window.addstr(y, x, char, colour)
 
+    @curses_wrapper
     def run(self):
         while self.bots:
             # Clear the screen.
@@ -56,18 +59,4 @@ class ConsoleSnakeEngine(SnakeEngine):
 
             # Let the snakes move!
             self.update_snakes()
-
-def main(*args):
-    import sys
-    from processbot import BotWrapper
-
-    rows, columns, apples = map(int, sys.argv[1:4])
-    game = ConsoleSnakeEngine(rows, columns, apples)
-    for filename in sys.argv[4:]:
-        bot = BotWrapper(filename)
-        game.add_bot(bot)
-    game.run()
-
-if __name__ == '__main__':
-    curses.wrapper(main)
 

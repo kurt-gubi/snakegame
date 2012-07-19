@@ -34,3 +34,11 @@ def random_avoid_bot(board, position):
         return 'U'
     return choice(available)
 
+BUILTIN_BOTS = {
+    'up_bot': up_bot,
+    'down_bot': down_bot,
+    'left_bot': left_bot,
+    'right_bot': right_bot,
+    'random_bot': random_bot,
+    'random_avoid_bot': random_avoid_bot,
+}

@@ -1,23 +1,21 @@
-#!/usr/bin/env python
+from __future__ import absolute_import
 
-from __future__ import division
-
-import pyglet
-pyglet.resource.path = ['images']
+import pyglet.resource
+pyglet.resource.path.append('@snakegame')
 pyglet.resource.reindex()
 
 from pyglet import gl
 
-import common
-from snakegame.engine import Engine
+from snakegame import common
+from snakegame.engines import Engine
 
 def scale_aspect((source_width, source_height), (target_width, target_height)):
-    source_aspect = source_width / source_height
-    target_aspect = target_width / target_height
+    source_aspect = float(source_width) / source_height
+    target_aspect = float(target_width) / target_height
     if source_aspect > target_aspect:
         # restrict width
         width = target_width
-        height = width / source_aspect
+        height = float(width) / source_aspect
     else:
         # restrict height
         height = target_height
@@ -45,15 +43,15 @@ class PygletEngine(Engine, pyglet.window.Window):
         )
 
         # load sprites
-        xscale = self.board_width / self.columns
-        yscale = self.board_height / self.rows
+        xscale = float(self.board_width) / self.columns
+        yscale = float(self.board_height) / self.rows
 
-        self.apple = pyglet.resource.image('apple.png')
+        self.apple = pyglet.resource.image('images/apple.png')
         self.apple.size = scale_aspect(
             (self.apple.width, self.apple.height),
             (xscale, yscale)
         )
-        self.eyes = pyglet.resource.image('eyes.png')
+        self.eyes = pyglet.resource.image('images/eyes.png')
         self.eyes.size = scale_aspect(
             (self.eyes.width, self.eyes.height),
             (xscale, yscale)
@@ -62,8 +60,8 @@ class PygletEngine(Engine, pyglet.window.Window):
     def on_draw(self):
         self.clear()
 
-        xscale = self.board_width / self.columns
-        yscale = self.board_height / self.rows
+        xscale = float(self.board_width) / self.columns
+        yscale = float(self.board_height) / self.rows
 
         # Draw grid.
         for y, row in enumerate(self.board):
@@ -81,7 +79,7 @@ class PygletEngine(Engine, pyglet.window.Window):
                                      ('c4B', self.EDGE_COLOR * 4))
 
                 # Draw the things on the square.
-                if cell == common.Squares.APPLE:
+                if cell == common.APPLE:
                     w, h = self.apple.size
                     self.apple.blit(left + (xscale - w) / 2.0, top - h, width=w, height=h)
 
@@ -104,15 +102,4 @@ class PygletEngine(Engine, pyglet.window.Window):
 
     def run(self):
         pyglet.app.run()
-
-if __name__ == '__main__':
-    import sys
-    from processbot import BotWrapper
-
-    rows, columns, apples = map(int, sys.argv[1:4])
-    game = PygletEngine(rows, columns, apples)
-    for filename in sys.argv[4:]:
-        bot = BotWrapper(filename)
-        game.add_bot(bot)
-    game.run()
 

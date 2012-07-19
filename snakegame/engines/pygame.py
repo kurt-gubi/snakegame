@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-from __future__ import division
+from __future__ import absolute_import
 
 import os
 import time
@@ -9,8 +7,8 @@ import pygame
 pygame.init()
 from pygame.locals import *
 
-from common import *
-from snake import SnakeEngine
+from snakegame import common
+from snakegame.engines import Engine
 
 class Sprites(object):
     PREFIX = 'images'
@@ -38,7 +36,7 @@ def scale_aspect((source_width, source_height), (target_width, target_height)):
         width = height * source_aspect
     return (width, height)
 
-class PygameSnakeEngine(SnakeEngine):
+class PygameEngine(Engine):
     EDGE_COLOR = (255, 255, 255)
     EDGE_WIDTH = 1
 
@@ -53,11 +51,11 @@ class PygameSnakeEngine(SnakeEngine):
         self.width = width
         self.height = height
 
-        super(PygameSnakeEngine, self).__init__(rows, columns, n_apples,
+        super(PygameEngine, self).__init__(rows, columns, n_apples,
                                                 **kwargs)
 
     def new_game(self, rows, columns, n_apples):
-        super(PygameSnakeEngine, self).new_game(rows, columns, n_apples)
+        super(PygameEngine, self).new_game(rows, columns, n_apples)
 
         # make board surface
         self.board_width, self.board_height = scale_aspect(
@@ -138,18 +136,16 @@ class PygameSnakeEngine(SnakeEngine):
         if running:
             time.sleep(2)
 
-if __name__ == '__main__':
-    import sys
-    from processbot import BotWrapper
-
-    rows, columns, apples = map(int, sys.argv[1:4])
-    game = PygameSnakeEngine(rows, columns, apples)
-    for filename in sys.argv[4:]:
-        bot = BotWrapper(filename)
-        game.add_bot(bot)
-    game.run()
-
-    # Early window close, late process cleanup.
-    pygame.display.quit()
-
-
+#if __name__ == '__main__':
+#    import sys
+#    from processbot import BotWrapper
+#
+#    rows, columns, apples = map(int, sys.argv[1:4])
+#    game = PygameEngine(rows, columns, apples)
+#    for filename in sys.argv[4:]:
+#        bot = BotWrapper(filename)
+#        game.add_bot(bot)
+#    game.run()
+#
+#    # Early window close, late process cleanup.
+#    pygame.display.quit()
