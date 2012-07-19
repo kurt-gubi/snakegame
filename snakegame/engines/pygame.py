@@ -1,27 +1,32 @@
 from __future__ import absolute_import
 
-import os
 import time
 
+import pkg_resources
+
 import pygame
+from pygame.image import load
 pygame.init()
-from pygame.locals import *
 
 from snakegame import common
 from snakegame.engines import Engine
 
-class Sprites(object):
-    PREFIX = 'images'
-    def __getattribute__(self, name):
-        try:
-            return object.__getattribute__(self, name.upper())
-        except AttributeError:
-            from pygame.image import load
-            filename = os.path.join(self.PREFIX, name.lower() + ".png")
-            image = load(filename).convert_alpha()
-            setattr(self, name, image)
-            return image
-Sprites = Sprites()
+sprite_cache = {}
+
+def load_sprite(filename):
+    if filename in sprite_cache:
+        return sprite_cache[filename]
+
+    f = pkg_resources.resource_stream('snakegame', filename)
+    image = load(f).convert_alpha()
+
+    sprite_cache[filename] = image
+    return image
+
+def load_image(filename, xscale, yscale):
+    image = load_sprite(filename)
+    new_size = scale_aspect(image.get_size(), (xscale, yscale))
+    return pygame.transform.smoothscale(image, new_size)
 
 def scale_aspect((source_width, source_height), (target_width, target_height)):
     source_aspect = source_width / source_height
@@ -67,12 +72,8 @@ class PygameEngine(Engine):
         xscale = self.board_width / self.columns
         yscale = self.board_height / self.rows
 
-        def load_image(image):
-            new_size = scale_aspect(image.get_size(), (xscale, yscale))
-            return pygame.transform.smoothscale(image, new_size)
-
-        self.apple = load_image(Sprites.APPLE)
-        self.eyes = load_image(Sprites.EYES)
+        self.apple = load_image('images/apple.png', xscale, yscale)
+        self.eyes = load_image('images/eyes.png', xscale, yscale)
 
     def draw_board(self):
         xscale = self.board_width / self.columns
@@ -85,14 +86,14 @@ class PygameEngine(Engine):
                 top = int(y * yscale)
                 w = int((x + 1) * xscale) - left
                 h = int((y + 1) * yscale) - top
-                r = Rect(left, top, w, h)
+                r = pygame.Rect(left, top, w, h)
 
                 # Draw a square.
                 pygame.draw.rect(self.surface, self.EDGE_COLOR, r,
                                  self.EDGE_WIDTH)
 
                 # Draw the things on the square.
-                if cell == Squares.APPLE:
+                if cell == common.APPLE:
                     self.surface.blit(self.apple, r.topleft)
 
                 elif cell.isalpha(): # Snake...
@@ -109,7 +110,7 @@ class PygameEngine(Engine):
         while running and self.bots:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or \
-                   (event.type == pygame.KEYDOWN and event.key == K_ESCAPE):
+                   (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                     running = False
                     break
             if not running: break
