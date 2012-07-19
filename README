@@ -1,0 +1,86 @@
+How to write a bot
+==================
+
+guarantee code indicates something you can run which will execute without errors
+if "input" refers to a valid board.
+
+input = {
+    # the object you control
+
+    # guarantee code:
+    # me = input["whoami"]
+    # my = input["objects"][me]
+    # assert my["type"] == "snake"
+    # (see below for more guarantees)
+
+    "whoami": "a",
+
+    # the board is by a torus by default (wraps around horiz & vert),
+    # but maps will have walls on all the edges to disable this.
+
+    # guarantee code:
+    # for row in input["board"]:
+    #     for item in row:
+    #         assert item in input["objects"]
+
+    "board": [
+        ["W", "W", "W", "W", "W", "W"],
+        ["W", " ", "*", " ", " ", "W"],
+        ["W", "a", " ", "b", "b", "W"],
+        ["W", " ", " ", " ", " ", "W"],
+        ["W", "W", "W", "W", "W", "W"]
+    ],
+
+    # each object refers to a type of "thing" which can be in the board.
+
+    # guarantee code:
+    # for key, thing in input["objects"].items():
+    #     if thing["type"] == "snake":
+    #         assert "valid_moves" in thing
+    #         x, y = thing["head"]
+    #         assert input["board"][y][x] == key
+    #     elif thing["type"] == "special":
+    #         for effect in thing["effects"]:
+    #             assert effect[0] in ("die", "grow")
+    #     else:
+    #         raise TypeError("invalid thing type")
+
+    "objects": {
+        "a": {
+            "type": "snake",
+            "head": [1, 2],
+            "valid_moves": {
+                "L": [0, 2],
+                "R": [2, 2],
+                "U": [1, 1],
+                "D": [1, 3]
+            }
+        },
+
+        "b": {
+            "type": "snake",
+            "head": [4, 2],
+            "valid_moves": {
+                "L": [3, 2],
+                "R": [5, 2],
+                "U": [4, 1],
+                "D": [4, 3]
+            }
+        },
+
+        "W": {
+            "type": "special",
+            "effects": [
+                ["die"]
+            ]
+        },
+
+        "*": { # represents an apple
+            "type": "special",
+            "effects": [
+                ["grow", 1]
+            ]
+        }
+    }
+}
+
