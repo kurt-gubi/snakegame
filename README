@@ -1,86 +1,57 @@
-How to write a bot
-==================
+= Getting started =
 
-guarantee code indicates something you can run which will execute without errors
-if "input" refers to a valid board.
+$ cat > simple.py
+def bot(board, position):
+    return 'L'
+^D
 
-input = {
-    # the object you control
+$ snakegame -e pyglet simple
 
-    # guarantee code:
-    # me = input["whoami"]
-    # my = input["objects"][me]
-    # assert my["type"] == "snake"
-    # (see below for more guarantees)
+= Writing a bot =
 
-    "whoami": "a",
+A bot is simply a Python function which takes two arguments, the current state
+of the board, and the current position of the head of your snake. The function
+must return one of the strings 'L', 'U', 'R' or 'D', indicating which direction
+the snake should next move (left, up, right or down, respectively).
 
-    # the board is by a torus by default (wraps around horiz & vert),
-    # but maps will have walls on all the edges to disable this.
+== The Board ==
 
-    # guarantee code:
-    # for row in input["board"]:
-    #     for item in row:
-    #         assert item in input["objects"]
+The board is a list containing each row of the board.
+Each row is a list containing the cells of that row.
 
-    "board": [
-        ["W", "W", "W", "W", "W", "W"],
-        ["W", " ", "*", " ", " ", "W"],
-        ["W", "a", " ", "b", "b", "W"],
-        ["W", " ", " ", " ", " ", "W"],
-        ["W", "W", "W", "W", "W", "W"]
-    ],
+The board is actually a torus (that is, the top edge wraps to the bottom, and
+the left edge to the right, and vice versa).
+Map designers can easily turn this into a normal grid simply by placing walls on
+the edges.
 
-    # each object refers to a type of "thing" which can be in the board.
+Each cell is a single character string:
 
-    # guarantee code:
-    # for key, thing in input["objects"].items():
-    #     if thing["type"] == "snake":
-    #         assert "valid_moves" in thing
-    #         x, y = thing["head"]
-    #         assert input["board"][y][x] == key
-    #     elif thing["type"] == "special":
-    #         for effect in thing["effects"]:
-    #             assert effect[0] in ("die", "grow")
-    #     else:
-    #         raise TypeError("invalid thing type")
+* period (.) indicates an empty cell
+* asterisk (*) indicates an apple
+* plus (+) indicates an ice cream
+* minus (-) indicates a shrinking potion
+* octothorpe (#) indicates a wall
+* uppercase letters (A-Z) indicate the head of a snake.
+* lowercase letters (a-z) indicate the body of a snake.
 
-    "objects": {
-        "a": {
-            "type": "snake",
-            "head": [1, 2],
-            "valid_moves": {
-                "L": [0, 2],
-                "R": [2, 2],
-                "U": [1, 1],
-                "D": [1, 3]
-            }
-        },
+All other characters are reserved for future use.
 
-        "b": {
-            "type": "snake",
-            "head": [4, 2],
-            "valid_moves": {
-                "L": [3, 2],
-                "R": [5, 2],
-                "U": [4, 1],
-                "D": [4, 3]
-            }
-        },
+Every snake will have exactly one head.
+Snakes may have no body.
+Snakes may have a body which is not contiguous on the board.
 
-        "W": {
-            "type": "special",
-            "effects": [
-                ["die"]
-            ]
-        },
+== Usual boilerplate ==
 
-        "*": { # represents an apple
-            "type": "special",
-            "effects": [
-                ["grow", 1]
-            ]
-        }
-    }
-}
+The typical boilerplate for writing a bot looks like this, which gets the
+character of your snake’s head, and the size of the board.
+
+def bot(board, position):
+    x, y = position
+    me = board[y][x]
+
+    height = len(board)
+    width = len(board[0])
+
+    # ...
+    return 'L'
 

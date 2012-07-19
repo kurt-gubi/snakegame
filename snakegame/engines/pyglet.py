@@ -9,7 +9,7 @@ pyglet.resource.reindex()
 from pyglet import gl
 
 import common
-from snake import SnakeEngine
+from snakegame.engine import Engine
 
 def scale_aspect((source_width, source_height), (target_width, target_height)):
     source_aspect = source_width / source_height
@@ -24,12 +24,12 @@ def scale_aspect((source_width, source_height), (target_width, target_height)):
         width = height * source_aspect
     return (width, height)
 
-class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
+class PygletEngine(Engine, pyglet.window.Window):
     EDGE_COLOR = (255, 255, 255, 255)
     EDGE_WIDTH = 2
 
     def __init__(self, rows, columns, n_apples, *args, **kwargs):
-        super(PygletSnakeEngine, self).__init__(rows, columns, n_apples, *args, **kwargs)
+        super(PygletEngine, self).__init__(rows, columns, n_apples, *args, **kwargs)
 
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -37,7 +37,7 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
         pyglet.clock.schedule_interval(lambda t: self.update_snakes(), 0.025)
 
     def new_game(self, rows, columns, n_apples):
-        super(PygletSnakeEngine, self).new_game(rows, columns, n_apples)
+        super(PygletEngine, self).new_game(rows, columns, n_apples)
 
         # make board surface
         self.board_width, self.board_height = scale_aspect(
@@ -100,7 +100,7 @@ class PygletSnakeEngine(SnakeEngine, pyglet.window.Window):
     def update_snakes(self, *args):
         if not self.bots:
             pyglet.app.exit()
-        super(PygletSnakeEngine, self).update_snakes(*args)
+        super(PygletEngine, self).update_snakes(*args)
 
     def run(self):
         pyglet.app.run()
@@ -110,7 +110,7 @@ if __name__ == '__main__':
     from processbot import BotWrapper
 
     rows, columns, apples = map(int, sys.argv[1:4])
-    game = PygletSnakeEngine(rows, columns, apples)
+    game = PygletEngine(rows, columns, apples)
     for filename in sys.argv[4:]:
         bot = BotWrapper(filename)
         game.add_bot(bot)

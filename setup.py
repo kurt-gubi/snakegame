@@ -7,5 +7,9 @@ setup(
     author='Peter Ward',
     author_email='peteraward@gmail.com',
     packages=['snakegame'],
-    scripts=[],
+    entry_points={
+        'console_scripts': [
+            'snakegame = snakegame:main',
+        ]
+    },
 )
