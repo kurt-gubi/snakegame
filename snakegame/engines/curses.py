@@ -1,15 +1,11 @@
+from __future__ import absolute_import
+
 import curses
 from functools import wraps
 import time
 
 from snakegame import common
 from snakegame.engines import Engine
-
-def curses_wrapper(fn):
-    @wraps(fn)
-    def deco(*args, **kwargs):
-        return curses.wrapper(fn, *args, **kwargs)
-    return deco
 
 class CursesEngine(Engine):
     def new_game(self, *args):
@@ -33,7 +29,7 @@ class CursesEngine(Engine):
                 colour = self.EMPTY_COLOUR
 
                 # Draw the things on the square.
-                if cell == Squares.APPLE:
+                if cell == common.APPLE:
                     char = '@'
                     colour = self.APPLE_COLOUR
 
@@ -44,7 +40,6 @@ class CursesEngine(Engine):
 
                 self.window.addstr(y, x, char, colour)
 
-    @curses_wrapper
     def run(self):
         while self.bots:
             # Clear the screen.
