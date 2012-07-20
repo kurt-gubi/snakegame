@@ -27,19 +27,32 @@ class PygletEngine(Engine, pyglet.window.Window):
     EDGE_WIDTH = 2
 
     def __init__(self, rows, columns, n_apples, *args, **kwargs):
-        super(PygletEngine, self).__init__(rows, columns, n_apples, *args, **kwargs)
+        kwargs.setdefault('caption', 'SnakeGame Window')
+        kwargs.setdefault('resizable', True)
+
+        super(PygletEngine, self).__init__(
+            rows, columns, n_apples,
+            *args, **kwargs
+        )
 
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         pyglet.clock.schedule_interval(lambda t: self.update_snakes(), 1/30.0)
 
-    def new_game(self, rows, columns, n_apples):
-        super(PygletEngine, self).new_game(rows, columns, n_apples)
+    def new_game(self, *args):
+        super(PygletEngine, self).new_game(*args)
+        self.on_resize(self.width, self.height)
+
+    def on_resize(self, width, height):
+        super(PygletEngine, self).on_resize(width, height)
+
+        assert width == self.width
+        assert height == self.height
 
         # make board surface
         self.board_width, self.board_height = scale_aspect(
-            (columns, rows), (self.width, self.height)
+            (self.columns, self.rows), (self.width, self.height)
         )
 
         # load sprites
