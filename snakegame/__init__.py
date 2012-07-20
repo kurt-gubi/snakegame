@@ -1,5 +1,3 @@
-import argparse
-
 from snakegame.engines import BUILTIN_ENGINES
 
 def first(d):
@@ -21,6 +19,8 @@ def load_engine(name, builtins=BUILTIN_ENGINES):
     return import_thing(engine, 'Engine')
 
 def main(argv=None):
+    import argparse
+
     parser = argparse.ArgumentParser(conflict_handler='resolve')
     parser.add_argument(
         '-e', '--engine',
