@@ -1,9 +1,8 @@
-import sys
-import string
-import random
-from random import randint
-from collections import deque
+from collections import defaultdict, deque
 from copy import deepcopy
+from random import Random
+from string import ascii_lowercase as lowercase
+import sys
 import traceback
 
 from snakegame.colour import hash_colour
@@ -14,9 +13,14 @@ class Engine(object):
         self,
         rows, columns, n_apples,
         wrap=True, results=False,
+        random=None,
         *args, **kwargs
     ):
         super(Engine, self).__init__(*args, **kwargs)
+
+        if random is None:
+            random = Random()
+        self.random = random
 
         self.wrap = wrap
         self.bots = {}
@@ -27,8 +31,8 @@ class Engine(object):
         self.new_game(rows, columns, n_apples)
 
     def get_random_position(self):
-        x = randint(0, self.columns - 1)
-        y = randint(0, self.rows - 1)
+        x = self.random.randrange(0, self.columns)
+        y = self.random.randrange(0, self.rows)
         return (x, y)
 
     def replace_random(self, old, new):
@@ -40,13 +44,15 @@ class Engine(object):
 
     def new_game(self, rows, columns, n_apples):
         self.game_ticks = 0
-        self.game_id = random.randint(0, sys.maxint)
+        self.game_id = self.random.randint(0, sys.maxint)
 
-        self.letters = list(string.lowercase)
+        self.letters = list(lowercase)
         self.letters.reverse()
 
         self.rows = rows
         self.columns = columns
+
+        self.messages_by_team = defaultdict(dict)
 
         # make board
         self.board = [[common.EMPTY for x in xrange(columns)] for y in xrange(rows)]
@@ -54,7 +60,7 @@ class Engine(object):
             x, y = self.get_random_position()
             self.board[y][x] = common.APPLE
 
-    def add_bot(self, bot):
+    def add_bot(self, bot, team=None):
         """
         A bot is a callable object, with this method signature:
             def bot_callable(
@@ -62,6 +68,9 @@ class Engine(object):
                 position=(snake_x, snake_y)
                 ):
                 return random.choice('RULD')
+
+        If team is not None, this means you will get a third parameter,
+        containing messages from the other bots on your team.
         """
         letter = self.letters.pop()
 
@@ -72,7 +81,7 @@ class Engine(object):
         if position is None:
             raise KeyError, "Could not insert snake into the board."
 
-        self.bots[letter] = [bot, colour, deque([position])]
+        self.bots[letter] = [bot, colour, deque([position]), team]
         return letter
 
     def remove_bot(self, letter):
@@ -104,11 +113,23 @@ class Engine(object):
     def update_snakes(self):
         self.game_ticks += 1
 
-        for letter, (bot, colour, path) in self.bots.items():
+        for letter, (bot, colour, path, team) in self.bots.items():
             board = deepcopy(self.board)
             try:
                 x, y = path[-1]
-                d = bot(board, (x, y))
+
+                if team is None:
+                    d = bot(board, (x, y))
+                else:
+                    messages = self.messages_by_team[team]
+                    d, message = bot(board, (x, y), messages)
+
+                    assert isinstance(message, str), \
+                        "Message should be a byte string, not %s (%r)." % (
+                            type(message),
+                            message,
+                        )
+                    messages[letter] = message
 
                 # Sanity checking...
                 assert isinstance(d, basestring), \
