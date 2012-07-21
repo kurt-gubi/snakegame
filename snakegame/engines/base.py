@@ -3,10 +3,14 @@ from copy import deepcopy
 from random import Random
 from string import ascii_lowercase as lowercase
 import sys
+import time
 import traceback
 
 from snakegame.colour import hash_colour
 from snakegame import common
+
+SOFT_TIME_LIMIT = 0.5
+HARD_TIME_LIMIT = 1.0
 
 class Engine(object):
     def __init__(
@@ -118,6 +122,8 @@ class Engine(object):
             try:
                 x, y = path[-1]
 
+                start = time.time()
+
                 if team is None:
                     d = bot(board, (x, y))
                 else:
@@ -130,6 +136,12 @@ class Engine(object):
                             message,
                         )
                     messages[letter] = message
+
+                end = time.time()
+                delta = end - start
+                assert delta < HARD_TIME_LIMIT, 'Exceeded hard time limit.'
+                if delta >= SOFT_TIME_LIMIT:
+                    print 'Bot %s (%r) exceeded soft time limit.' % (letter.upper(), bot)
 
                 # Sanity checking...
                 assert isinstance(d, basestring), \
