@@ -7,48 +7,48 @@ pyglet.resource.reindex()
 from pyglet import gl
 
 from snakegame import common
-from snakegame.engines import Engine
+from snakegame.utils import scale_aspect
 
-def scale_aspect((source_width, source_height), (target_width, target_height)):
-    source_aspect = float(source_width) / source_height
-    target_aspect = float(target_width) / target_height
-    if source_aspect > target_aspect:
-        # restrict width
-        width = target_width
-        height = float(width) / source_aspect
-    else:
-        # restrict height
-        height = target_height
-        width = height * source_aspect
-    return (width, height)
-
-class PygletEngine(Engine, pyglet.window.Window):
+class Viewer(pyglet.window.Window):
     EDGE_COLOR = (255, 255, 255, 255)
     EDGE_WIDTH = 2
 
-    def __init__(self, rows, columns, n_apples, *args, **kwargs):
-        kwargs.setdefault('caption', 'SnakeGame Window')
-        kwargs.setdefault('resizable', True)
-
-        super(PygletEngine, self).__init__(
-            rows, columns, n_apples,
-            *args, **kwargs
+    def __init__(self, engine, caption='SnakeGame Window', resizable=True, **kwargs):
+        super(Viewer, self).__init__(
+            caption=caption,
+            resizable=resizable,
+            **kwargs
         )
+
+        self.engine = engine
+        self.engine_iter = iter(engine)
 
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         pyglet.clock.schedule_interval(lambda t: self.update_snakes(), 1/30.0)
 
-    def new_game(self, *args):
-        super(PygletEngine, self).new_game(*args)
-        self.on_resize(self.width, self.height)
+        self.board = None
+        self.columns = None
+        self.rows = None
+
+    def update_snakes(self, *args):
+        self.board = next(self.engine_iter, None)
+        if self.board is None:
+            pyglet.app.exit()
+            return
+
+        columns, rows = common.get_size(self.board)
+        if columns != self.columns or rows != self.rows:
+            self.columns = columns
+            self.rows = rows
+            self.on_resize(self.width, self.height)
 
     def on_resize(self, width, height):
-        super(PygletEngine, self).on_resize(width, height)
+        super(Viewer, self).on_resize(width, height)
 
-        assert width == self.width
-        assert height == self.height
+        if self.board is None:
+            return
 
         # make board surface
         self.board_width, self.board_height = scale_aspect(
@@ -73,6 +73,9 @@ class PygletEngine(Engine, pyglet.window.Window):
     def on_draw(self):
         self.clear()
 
+        if self.board is None:
+            return
+
         xscale = float(self.board_width) / self.columns
         yscale = float(self.board_height) / self.rows
 
@@ -96,22 +99,18 @@ class PygletEngine(Engine, pyglet.window.Window):
                     w, h = self.apple.size
                     self.apple.blit(left + (xscale - w) / 2.0, top - h, width=w, height=h)
 
-                elif cell.isalpha(): # Snake...
-                    colour = self.bots[cell.lower()][1] + (255,)
+                elif common.is_snake(cell):
+                    bot = self.engine.bots[cell.lower()]
+                    colour = bot[1] + (255,)
                     gl.glPolygonMode(gl.GL_FRONT, gl.GL_FILL)
                     pyglet.graphics.draw(4, gl.GL_POLYGON,
                                          ('v2f', r),
                                          ('c4B', colour * 4),
                     )
 
-                    if cell.isupper(): # Snake head
+                    if common.is_snake_head(cell):
                         w, h = self.eyes.size
                         self.eyes.blit(left, top - h, width=w, height=h)
-
-    def update_snakes(self, *args):
-        if not self.bots:
-            pyglet.app.exit()
-        super(PygletEngine, self).update_snakes(*args)
 
     def run(self):
         pyglet.app.run()

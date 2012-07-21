@@ -1,4 +1,5 @@
-from snakegame.engines import BUILTIN_ENGINES
+from snakegame.engine import Engine
+from snakegame.viewers import BUILTIN_VIEWERS
 
 def first(d):
     for item in d:
@@ -14,22 +15,13 @@ def import_thing(name, default_obj):
     mod = __import__(pkg, fromlist=[obj])
     return getattr(mod, obj)
 
-def load_engine(name, builtins=BUILTIN_ENGINES):
-    engine = BUILTIN_ENGINES.get(name, name)
-    return import_thing(engine, 'Engine')
-
 def main(argv=None):
     import argparse
 
     parser = argparse.ArgumentParser(conflict_handler='resolve')
     parser.add_argument(
-        '-e', '--engine',
-        default=first(BUILTIN_ENGINES),
-    )
-    parser.add_argument(
-        '-l', '--loop',
-        action='store_true',
-        default=False,
+        '-v', '--viewer',
+        default=first(BUILTIN_VIEWERS),
     )
     parser.add_argument(
         '-w', '--width',
@@ -46,17 +38,15 @@ def main(argv=None):
     parser.add_argument('bot', nargs='+')
     args = parser.parse_args(argv)
 
-    engine = load_engine(args.engine)
+    viewer_name = BUILTIN_VIEWERS.get(args.viewer, args.viewer)
+    viewer_class = import_thing(viewer_name, 'Viewer')
 
-    game = engine(args.height, args.width, args.apples)
+    game = Engine(args.height, args.width, args.apples)
 
     for name in args.bot:
         bot = import_thing(name, 'bot')
         game.add_bot(bot)
 
-    game.run()
-
-    if args.loop:
-        while True:
-            game.run()
+    viewer = viewer_class(game)
+    viewer.run()
 

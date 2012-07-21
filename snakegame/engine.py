@@ -188,3 +188,9 @@ class Engine(object):
                 print '-'*60
                 self.remove_bot(letter)
 
+    def __iter__(self):
+        yield self.board
+        while self.bots:
+            self.update_snakes()
+            yield self.board
+

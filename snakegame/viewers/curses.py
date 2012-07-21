@@ -1,15 +1,15 @@
 from __future__ import absolute_import
 
 import curses
-from functools import wraps
 import time
 
 from snakegame import common
-from snakegame.engines import Engine
 
-class CursesEngine(Engine):
-    def new_game(self, *args):
-        super(CursesEngine, self).new_game(*args)
+class Viewer(object):
+    def __init__(self, engine, *args, **kwargs):
+        super(Viewer, self).__init__(*args, **kwargs)
+
+        self.engine = engine
 
         self.window = curses.initscr()
         curses.start_color()
@@ -21,9 +21,9 @@ class CursesEngine(Engine):
         self.APPLE_COLOUR = curses.color_pair(1)
         self.SNAKE_COLOUR = curses.color_pair(4)
 
-    def draw_board(self):
+    def draw_board(self, board):
         # Draw grid.
-        for y, row in enumerate(self.board):
+        for y, row in enumerate(board):
             for x, cell in enumerate(row):
                 char = '.'
                 colour = self.EMPTY_COLOUR
@@ -41,17 +41,14 @@ class CursesEngine(Engine):
                 self.window.addstr(y, x, char, colour)
 
     def run(self):
-        while self.bots:
+        for board in self.engine:
             # Clear the screen.
             self.window.erase()
 
             # Draw the board.
-            self.draw_board()
+            self.draw_board(board)
 
             # Update the display.
             self.window.refresh()
             time.sleep(0.025)
-
-            # Let the snakes move!
-            self.update_snakes()
 

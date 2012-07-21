@@ -9,7 +9,7 @@ from pygame.image import load
 pygame.init()
 
 from snakegame import common
-from snakegame.engines import Engine
+from snakegame.utils import scale_aspect
 
 sprite_cache = {}
 
@@ -25,29 +25,18 @@ def load_sprite(filename):
 
 def load_image(filename, xscale, yscale):
     image = load_sprite(filename)
-    new_size = scale_aspect(image.get_size(), (xscale, yscale))
-    return pygame.transform.smoothscale(image, new_size)
+    w, h = scale_aspect(image.get_size(), (xscale, yscale))
+    return pygame.transform.smoothscale(image, (int(w), int(h)))
 
-def scale_aspect((source_width, source_height), (target_width, target_height)):
-    source_aspect = source_width / source_height
-    target_aspect = target_width / target_height
-    if source_aspect > target_aspect:
-        # restrict width
-        width = target_width
-        height = width / source_aspect
-    else:
-        # restrict height
-        height = target_height
-        width = height * source_aspect
-    return (width, height)
-
-class PygameEngine(Engine):
+class Viewer(object):
     EDGE_COLOR = (255, 255, 255)
     EDGE_WIDTH = 1
 
-    def __init__(self, rows, columns, n_apples,
-                 width=800, height=600, fullscreen=False,
-                 **kwargs):
+    def __init__(self, engine, width=800, height=600, fullscreen=False, **kwargs):
+        super(Viewer, self).__init__(**kwargs)
+
+        self.engine = engine
+
         flags = 0
         if fullscreen:
             flags |= pygame.FULLSCREEN
@@ -56,15 +45,13 @@ class PygameEngine(Engine):
         self.width = width
         self.height = height
 
-        super(PygameEngine, self).__init__(rows, columns, n_apples,
-                                                **kwargs)
+        self.columns = None
+        self.rows = None
 
-    def new_game(self, rows, columns, n_apples):
-        super(PygameEngine, self).new_game(rows, columns, n_apples)
-
+    def on_resize(self):
         # make board surface
         self.board_width, self.board_height = scale_aspect(
-            (columns, rows), (self.width, self.height)
+            (self.columns, self.rows), (self.width, self.height)
         )
         self.surface = pygame.Surface((self.board_width, self.board_height))
 
@@ -75,12 +62,12 @@ class PygameEngine(Engine):
         self.apple = load_image('images/apple.png', xscale, yscale)
         self.eyes = load_image('images/eyes.png', xscale, yscale)
 
-    def draw_board(self):
+    def draw_board(self, board):
         xscale = self.board_width / self.columns
         yscale = self.board_height / self.rows
 
         # Draw grid.
-        for y, row in enumerate(self.board):
+        for y, row in enumerate(board):
             for x, cell in enumerate(row):
                 left = int(x * xscale)
                 top = int(y * yscale)
@@ -96,18 +83,26 @@ class PygameEngine(Engine):
                 if cell == common.APPLE:
                     self.surface.blit(self.apple, r.topleft)
 
-                elif cell.isalpha(): # Snake...
-                    colour = self.bots[cell.lower()][1]
+                elif common.is_snake(cell):
+                    bot = self.engine.bots[cell.lower()]
+                    colour = bot[1]
                     self.surface.fill(colour, r)
 
-                    if cell.isupper(): # Snake head
+                    if common.is_snake_head(cell):
                         self.surface.blit(self.eyes, r.topleft)
 
     def run(self):
         clock = pygame.time.Clock()
 
         running = True
-        while running and self.bots:
+
+        for board in self.engine:
+            columns, rows = common.get_size(board)
+            if columns != self.columns or rows != self.rows:
+                self.columns = columns
+                self.rows = rows
+                self.on_resize()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT or \
                    (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -120,7 +115,7 @@ class PygameEngine(Engine):
             self.surface.fill((0, 0, 0))
 
             # Draw the board.
-            self.draw_board()
+            self.draw_board(board)
 
             # Center the board.
             x = (self.width - self.board_width) / 2
@@ -131,22 +126,6 @@ class PygameEngine(Engine):
             pygame.display.flip()
             clock.tick(20)
 
-            # Let the snakes move!
-            self.update_snakes()
-
         if running:
             time.sleep(2)
 
-#if __name__ == '__main__':
-#    import sys
-#    from processbot import BotWrapper
-#
-#    rows, columns, apples = map(int, sys.argv[1:4])
-#    game = PygameEngine(rows, columns, apples)
-#    for filename in sys.argv[4:]:
-#        bot = BotWrapper(filename)
-#        game.add_bot(bot)
-#    game.run()
-#
-#    # Early window close, late process cleanup.
-#    pygame.display.quit()
