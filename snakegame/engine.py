@@ -16,7 +16,7 @@ class Engine(object):
     def __init__(
         self,
         rows, columns, n_apples,
-        wrap=True, results=False,
+        wrap=True,
         random=None,
         *args, **kwargs
     ):
@@ -28,9 +28,6 @@ class Engine(object):
 
         self.wrap = wrap
         self.bots = {}
-        self.results = None
-        if results:
-            self.results = open('results.csv', 'a+')
 
         self.new_game(rows, columns, n_apples)
 
@@ -100,19 +97,6 @@ class Engine(object):
 
         bot = self.bots[letter]
         del self.bots[letter]
-
-        if not self.results:
-            return
-
-        try:
-            name = bot[0].__name__
-        except AttributeError:
-            pass
-        else:
-            apple_score = len(bot[2])
-            self.results.write('%s,%s,%s,%s\n' % \
-                (self.game_id, name, apple_score, time_score))
-            self.results.flush()
 
     def update_snakes(self):
         self.game_ticks += 1
