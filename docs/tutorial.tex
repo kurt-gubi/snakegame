@@ -1,0 +1,47 @@
+\documentclass[12pt]{article}
+
+\usepackage{fontspec}
+
+\usepackage[pdfborder={0 0 0}]{hyperref}
+\usepackage[margin=20mm]{geometry}
+
+\usepackage{float}
+\usepackage{subcaption}
+
+\floatstyle{ruled}
+\newfloat{board}{bh}{brd}
+\floatname{board}{Board}
+\DeclareCaptionSubType{board}
+
+\usepackage{minted}
+
+\newmint[pyinline]{python}{}
+\newmintedfile{python}{}
+\usemintedstyle{tango}
+
+\setmainfont{Linux Libertine O}
+
+\setlength\parskip{2ex}
+\setlength\parindent{0mm}
+
+\widowpenalty=1000
+\clubpenalty=1000
+\newcommand\fasttrack[1]{\vspace{-2ex}\hfill\emph{Fast track: #1}\nopagebreak}
+
+\begin{document}
+
+\title{Writing SnakeGame bots}
+\author{Peter Ward}
+\date{July 29, 2012}
+\maketitle
+
+\input{introduction.tex}
+
+%\pagebreak
+\input{firstbot.tex}
+
+\input{random_simple.tex}
+
+\input{random_avoid.tex}
+
+\end{document}

@@ -1,0 +1,22 @@
+\section{Your First Bot}
+\fasttrack{Always move up.}
+
+Alright, let’s get started.
+If you think back to when you started programming, chances are the first program
+you ever wrote was one which printed out the immortal phrase “Hello World”.
+Well we can’t print stuff here, but our first bot is going to be almost as
+useless as that: our bot is just going to continually move up.
+
+Let’s have a look at the code:
+\pythonfile{firstbot.py}
+
+If you run this script (\texttt{python firstbot.py}),
+you should see a nice big board with some apples scattered over it, and a snake
+continually moving upwards.
+That snake is our bot: each time the game decides that our snake is allowed to
+move, it calls the \texttt{up\_bot} function, which immediately returns the
+string \mint{python}|'U'|, which means it should move the snake upwards.
+
+Got all that?
+Once you’re ready, we’ll move on to something a little more interesting.
+

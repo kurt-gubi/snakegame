@@ -1,0 +1,47 @@
+\section{Random Avoid Bot}
+\fasttrack{Choose a direction at random, but not one which will lead to immediate death.}
+
+The last bot we wrote had a big problem, it ran into its own tail.
+We don’t want our next bot to be that stupid, so we need to teach it how to not
+do that!
+
+But before we can do that, we need to know few more things about our bots.
+You might have noticed that our functions have two parameters,
+\texttt{board} and \texttt{position}.
+We haven’t had to use them so far, but we will now, so we need to know what they
+are.
+But rather than me just telling you what they are,
+why not have a look yourself?
+
+\pythonfile{print\_bot.py}
+
+You should see something like this (on a 4x3 board):
+\begin{minted}{pytb}
+(1, 2)
+[['.', '.', '*', '.'], ['.', '.', '*', '.'], ['.', 'A', '.', '.']]
+Exception in bot A (<'<'>function print_bot at 0x7f61165f2e60<'>'>):
+------------------------------------------------------------
+Traceback (most recent call last):
+  File "…/snakegame/engine.py", line 132, in update_snakes
+    "Return value should be a string."
+AssertionError: Return value should be a string.
+------------------------------------------------------------
+\end{minted}
+
+Ignore all the Exception stuff, that’s just because we didn’t return one of
+\pyinline|'L'|, \pyinline|'U'|, \pyinline|'D'| or \pyinline|'R'|.
+The first line is our position: it’s a \pyinline|tuple| of the x and y
+coordinates of our snake’s head.
+The second line is the board: it’s a list of each row in the board,
+and each row is a list of the cells in that row.
+
+Notice that if we index the board first by the y coordinate and then by the x
+coordinate, we can get the character in the board where our snake is:
+\pyinline|board[y][x] == board[2][1] == 'A'|.
+The head of our snake is always an uppercase character in the board,
+and the rest of our body (the tail) are always lowercase characters.
+
+This is all very well, but how do we stop our bot from eating its tail?
+Well, the answer is that we need to look at each of the squares surrounding our
+snake’s head, to see if we’ll die if we move into them or not.
+

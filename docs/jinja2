@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+import argparse
+import json
+from os import path
+import sys
+
+from jinja2 import Environment, FileSystemLoader
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--latex', action='store_true')
+parser.add_argument('template', nargs='?')
+parser.add_argument('data', nargs='?')
+
+args = parser.parse_args()
+
+if args.latex:
+    env = Environment(
+        block_start_string='%%',
+        block_end_string='%%',
+        variable_start_string='<',
+        variable_end_string='>',
+        comment_start_string='###',
+        comment_end_string='###',
+    )
+else:
+    env = Environment()
+
+if args.template:
+    dirname, basename = path.split(args.template)
+
+    env.loader = FileSystemLoader(dirname)
+    template = env.get_template(basename)
+
+    if args.data:
+        with open(args.data, 'rb') as f:
+            data = json.load(f)
+
+    else:
+        data = json.load(sys.stdin)
+
+else:
+    source = sys.stdin.read()
+    template = env.from_string(source.decode('utf-8'))
+    data = {}
+
+    env.loader = FileSystemLoader('.')
+
+output = template.render(data)
+
+sys.stdout.write(output.encode('utf-8'))

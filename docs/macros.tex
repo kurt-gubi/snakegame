@@ -1,0 +1,19 @@
+%%- macro make_board(board) %%
+\begin{verbatim}
+%% for row in board %%
+%%- if loop.first %%
+<- ' ' >
+%%- for n in range(row |length) %%
+<- ' ' ~ n >
+%%- endfor %%
+< ' +' ~ '-+' * (row | length) >
+%%- endif %%
+< loop.index0 ~ '|' >
+%%- for cell in row %%
+<- cell >|
+%%- endfor %%
+< ' +' ~ '-+' * (row | length) >
+%%- endfor %%
+\end{verbatim}
+%%- endmacro %%
+

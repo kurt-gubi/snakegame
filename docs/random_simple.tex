@@ -1,0 +1,63 @@
+%%- from "macros.tex" import make_board -%%
+
+\section{Random Bot}
+\fasttrack{Choose a direction at random.}
+
+The next bot we’ll write is one which instead of moving in just one direction,
+chooses a direction at random to move in.
+Go on, try writing it yourself! I’ll wait here until you’re ready.
+
+Got it working? Good work!
+But you’ve probably noticed that there’s a problem:
+it doesn’t take long for our random bot to die.
+But why does it die?
+The answer is that once it eats an apple, it then has a tail, and since it
+doesn’t know any better, it will happily move into the square where its tail is.
+
+\begin{board}
+\hfill
+%
+\begin{subfigure}{.3\linewidth}
+< make_board(['   *', ' A* ', ' *  '])>
+\caption{Our intrepid snake heads towards an apple. Next move: \textbf{R}}
+\label{brd:random-death:1}
+\end{subfigure}
+\hfill
+%
+\begin{subfigure}{.3\linewidth}
+< make_board(['*  *', ' aA ', ' *  ']) >
+\caption{It has eaten the apple, and now has a tail. Next move: \textbf{L}}
+\label{brd:random-death:2}
+\end{subfigure}
+\hfill
+%
+\begin{subfigure}{.3\linewidth}
+< make_board(['*  *', '    ', ' *  ']) >
+\caption{It decided to move left, and ran into itself, oh no!}
+\label{brd:random-death:3}
+\end{subfigure}
+%
+\hfill
+
+\caption{The last moves of Random Bot before death.}
+\label{brd:random-death}
+\end{board}
+
+\pagebreak
+
+By the way, how long was your solution?
+If you’re still learning Python, you might like to have a peek at my solution to
+this bot, it’s only three lines long.
+Hopefully you didn’t write too much more than that!
+
+\pythonfile{random_simple.py}
+
+There are two key things that make my solution work.
+The first is the \texttt{random.choice} function,
+which returns a random item chosen from a sequence you give it.
+The second thing is that a string is a sequence:
+it is made up of the characters in it.
+So if you write \mint{python}|choice('UDLR')|,
+that’s the same as if you had written
+\mint{python}|choice(['U', 'D', 'L', 'R'])|.
+
