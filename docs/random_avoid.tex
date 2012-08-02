@@ -1,3 +1,5 @@
+%%- from "macros.tex" import make_board -%%
+
 \section{Random Avoid Bot}
 \fasttrack{Choose a direction at random, but not one which will lead to immediate death.}
 
@@ -44,4 +46,122 @@ and the rest of our body (the tail) are always lowercase characters.
 This is all very well, but how do we stop our bot from eating its tail?
 Well, the answer is that we need to look at each of the squares surrounding our
 snake’s head, to see if we’ll die if we move into them or not.
+
+Let’s have a look at the square to the right of our snake’s head.
+First, we need to know its coordinates: looking at
+Board~\ref{brd:right-square:normal},
+we see that if our snake is at position $(x, y)$,
+then the square on the right will be at position $(x + 1, y)$.
+
+But this isn’t the whole story: Board~\ref{brd:right-square:wrapping}
+shows that if the snake is on the rightmost column, the square on the right
+is going to wrap around to be on the leftmost column.
+
+\begin{board}
+\begin{subfigure}{.45\linewidth}
+    \begin{tabular}{l|l|l|l|l}
+      … & $x-1$ & $x$              & $x + 1$            & … \\\hline
+  $y-1$ &       &                  &                    &   \\\hline
+  $y$   &       & $\mathbf{(x,y)}$ & $\mathbf{(x+1,y)}$ &   \\\hline
+  $y+1$ &       &                  &                    &   \\\hline
+      … &       &                  &                    & … \\
+    \end{tabular}
+\caption{Coordinate of the square to the right (ignoring wrapping).}
+\label{brd:right-square:normal}
+\end{subfigure}
+\hfill
+%
+\begin{subfigure}{.45\linewidth}
+< make_board([
+    '.....',
+    '*...A',
+    '.....',
+]) >
+\caption{%
+    The board wraps around,
+    so the square to the right of our snake $(4, 1)$
+    is the apple $(0, 1)$.
+}
+\label{brd:right-square:wrapping}
+\end{subfigure}
+
+\caption{Finding the square to the right.}
+\label{brd:right-square}
+\end{board}
+
+Fortunately for us, there’s an easy way of ‘wrapping’ around in Python,
+which is the modulo operator (\%). The modulo operator returns the
+\emph{remainder} when you divide two numbers.
+\begin{minted}{pycon}
+>>> 3 % 8
+3
+>>> 7 % 8
+7
+>>> 8 % 8
+0
+>>> 9 % 8
+1
+>>> for i in range(20):
+...   print i % 8,
+... 
+0 1 2 3 4 5 6 7 0 1 2 3 4 5 6 7 0 1 2 3
+\end{minted}
+
+\newcommand\mod{\,\%\,}
+
+% TODO: how do we get the width and height of the board?
+
+Looking back at Board~\ref{brd:right-square:wrapping}, we need to wrap the x
+coordinate back to $0$ when $x + 1 = width$,
+so we need $(x + 1) \mod width$.
+Taking this to a more general level, imagine we need to get the cell where
+the x coordinate is shifted by $dx$
+and the y coordinate is shifted by $dy$.
+For example, we might want to get the cell diagonally adjacent on the bottom
+left: it’s one square to the left, $dx = -1$ and one square down $dy = 1$.
+Don’t forget that moving right or down means adding
+and moving left or upwards means subtracting!
+Back to our general case, our new cell is going to be at the position
+$((x + dx) \mod width, (y + dy) \mod height)$.
+
+Don’t worry if you didn’t follow the general case there, you just need to
+remember that the cell to the right is at $((x + 1) \mod width, y)$.
+We then need to look \emph{in the board} at that position to see what’s in that
+cell.
+Remember that our board is a list of rows (stacked vertically),
+and each row is a list of cells (stacked horizontally).
+So we need to first find the right row, which we will do by using the y
+coordinate: \pyinline|board[y]|.
+Then we need to find the right cell in the row, using the x coordinate:
+\pyinline|board[y][(x + 1) % width]|.
+
+We’re almost at the end: all we need to do is build up a list of each cell we
+can move into. We know that we can move into cells which are
+empty (represented by a full stop)
+or have an apple (represented by an asterisk) in them,
+so we’ll test for that.
+Take a moment to write out the code we’ve managed to build so far, hopefully
+you’ll end up with something very close to what I’ve got below.
+Then you just need to add the other directions (left, up and down), and you’re
+done.
+
+\begin{pythoncode}
+from random import choice
+
+def bot(board, position):
+    x, y = position
+    height = len(board)
+    width = len(board[0])
+
+    valid_moves = []
+
+    right = board[y][(x + 1) % width]
+    if right == '.' or right == '*':
+        valid_moves.append('R')
+
+    return choice(valid_moves)
+\end{pythoncode}
+
+If you’re really stuck, or want to check your solution, here’s my solution:
+\pythonfile{random_avoid.py}
 

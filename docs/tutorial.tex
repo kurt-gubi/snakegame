@@ -14,12 +14,14 @@
 \DeclareCaptionSubType{board}
 
 \usepackage{minted}
-
-\newmint[pyinline]{python}{}
-\newmintedfile{python}{}
 \usemintedstyle{tango}
 
+\newmint[pyinline]{python}{}
+\newminted{python}{}
+\newmintedfile{python}{}
+
 \setmainfont{Linux Libertine O}
+\setmonofont[AutoFakeBold]{Inconsolata}
 
 \setlength\parskip{2ex}
 \setlength\parindent{0mm}
@@ -37,11 +39,18 @@
 
 \input{introduction.tex}
 
-%\pagebreak
 \input{firstbot.tex}
 
 \input{random_simple.tex}
 
+% this section is rather long,
+% perhaps take an intermission to explain the board
+% and getting width, height
+% and modulo properly?
 \input{random_avoid.tex}
+
+\input{look_ahead.tex}
+
+\input{closest_apple.tex}
 
 \end{document}
