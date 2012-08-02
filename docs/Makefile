@@ -21,7 +21,7 @@ ${BUILD_DIR}/%.py: %.py
 
 tutorial.pdf: ${BUILD_DIR}/tutorial.tex ${BUILD_FILES}
 	cd "${BUILD_DIR}" && \
+	${LATEX} ${LATEX_FLAGS} tutorial && \
+	${LATEX} ${LATEX_FLAGS} tutorial && \
 	${LATEX} ${LATEX_FLAGS} tutorial
 	mv -f "${BUILD_DIR}/tutorial.pdf" tutorial.pdf
-#	${LATEX} ${LATEX_FLAGS} tutorial && \
-#	${LATEX} ${LATEX_FLAGS} tutorial && \
