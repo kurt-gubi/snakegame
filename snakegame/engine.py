@@ -88,14 +88,11 @@ class Engine(object):
     def remove_bot(self, letter):
         letter = letter.lower()
 
-        time_score = self.game_ticks
-
         for row in self.board:
             for x, cell in enumerate(row):
                 if cell.lower() == letter:
                     row[x] = common.EMPTY
 
-        bot = self.bots[letter]
         del self.bots[letter]
 
     def update_snakes(self):
