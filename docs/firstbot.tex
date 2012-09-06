@@ -1,4 +1,5 @@
 \section{Your First Bot}
+\label{sec:firstbot}
 \fasttrack{Always move up.}
 
 Alright, let’s get started.
@@ -10,13 +11,71 @@ useless as that: our bot is just going to continually move up.
 Let’s have a look at the code:
 \pythonfile{firstbot.py}
 
-If you run this script (\texttt{python firstbot.py}),
-you should see a nice big board with some apples scattered over it, and a snake
-continually moving upwards.
-That snake is our bot: each time the game decides that our snake is allowed to
-move, it calls the \texttt{up\_bot} function, which immediately returns the
-string \mint{python}|'U'|, which means it should move the snake upwards.
+Pretty simple, huh?
+It’s a function takes as input two parameters, and returns a string.
+We’ll have a look at \texttt{board} and \texttt{position} later,
+but the important thing here is that the returned value says which direction the
+snake should move in. Each time the snake is allowed to make a move, the
+function is called, it returns one of \py|'U', 'D', 'L', 'R'|
+(indicating up, down, left and right, respectively), and the snake is moved in
+that direction.
 
-Got all that?
+\subsection{Running the code}
+
+Depending on how you have installed SnakeGame, there are a few different ways to
+run the code. If you’re in some kind of programming class, ask your instructor
+which method to use.
+
+\subsubsection{Method A: CLI interface}
+
+If you installed from the repository (using \texttt{pip}), this is the method
+you should use.
+Assuming you’ve put the \texttt{up\_bot} function in a file called
+\texttt{mybot.py}, you can run this command:
+
+\begin{shell}
+$ snakegame mybot:up_bot
+\end{shell}
+
+To use different viewers, you can supply the \texttt{-v VIEWER} argument:
+\begin{shell}
+$ snakegame -v pyglet mybot:up_bot
+$ snakegame -v pygame mybot:up_bot
+$ snakegame -v curses mybot:up_bot
+\end{shell}
+
+You can specify multiple bots, and also control the width, height and number of
+apples on the board:
+\begin{shell}
+$ snakegame -w 4 -h 20 -a 30 mybot:up_bot mybot:up_bot mybot:up_bot
+\end{shell}
+
+\subsubsection{Method B: Pyglet / Pygame}
+
+You can also add some code to the file containing your bot so that you can run
+that file as a normal Python program, which will run the game.
+At the end of the file, add this:
+\begin{pythoncode}
+if __name__ == '__main__':
+    from snakegame.engine import Engine
+    from snakegame.viewers.pyglet import Viewer
+    engine = Engine(10, 10, 25)
+    engine.add_bot(up_bot)
+    viewer = Viewer(engine)
+    viewer.run()
+\end{pythoncode}
+
+If you want to use pygame instead, change \texttt{snakegame.viewers.pyglet} to
+\texttt{snakegame.viewers.pygame}.
+
+If neither of these work, there is also a console viewer, which works if you’re
+in a terminal (it will not work in IDLE!):
+use \texttt{snakegame.viewers.curses}.
+
+\subsection{Got it running?}
+
+Great, you should see a nice big board with some apples scattered over it,
+and a snake continually moving upwards.
+
 Once you’re ready, we’ll move on to something a little more interesting.
 

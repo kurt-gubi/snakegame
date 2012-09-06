@@ -1,37 +1,61 @@
 \section{Introduction}
 
-I assume you know the basics of Python:
-printing stuff,
-if/elif/else,
-for and while loops and lists.
-That’s really all you need to follow along at least the first four sections,
-and then dictionaries will start to come in handy.
-
-If you have no idea what I was just talking about, \emph{don’t panic}.
-All that means is that you’re not quite ready for this yet,
-and you need to start by learning Python using some of these excellent
-resources:
+Before starting this tutorial, you should \emph{already} know the basics of
+Python. Specifically, you should know these bits of Python:
 \begin{itemize}
-    \item \url{http://openbookproject.net/thinkcs/python/english2e/}
-    \item \url{http://learnpythonthehardway.org/}
-    \item \url{http://docs.python.org/tutorial/}
-    \item Anyone you know who knows about Python, or is a programmer.
+    \item How to \py|print| things
+    \item \py|if|, \py|elif| and \py|else|
+    \item \py|for| and \py|while| loops
+    \item \py|list|s and \py|dict|ionaries
+    \item functions (\py|def|)
 \end{itemize}
-Don’t be discouraged if it doesn’t immediately make sense:
-programming can be difficult and frustrating,
-but if you put the effort in, it can also be a very rewarding, interesting and
-fun activity.
 
-If you are stuck with anything, Google it first.
+\subsection{Help! I don’t know what these are…}
 
-You’ll need to start by getting the code.
-The repository is at
-\url{http://hg.flowblok.id.au/snakegame},
-you can install it with pip:
-\begin{minted}{sh}
+If you have no idea what any of those things are, \emph{don’t panic}.
+All that means is that you’re not quite ready to follow this tutorial yet, and
+you need to learn the basics of Python first.
+There are many excellent \emph{free} resources for doing this:
+\begin{itemize}
+    \item How to Think Like a Computer Scientist \\
+        (\url{http://openbookproject.net/thinkcs/python/english2e/})
+    \item Learn Python the Hard Way \\
+        \url{http://learnpythonthehardway.org/}
+    \item The official tutorial in the Python documentation \\
+        \url{http://docs.python.org/tutorial/}
+\end{itemize}
+
+The most important resource to learn programming, however, are the people you
+know who are learning Python with you, already know Python, or some other
+programming language.
+You can spend hours trying to understand something in books and not get it,
+but ask another person to explain it, and it will all suddenly ‘click’ and make
+sense.
+
+\subsection{Yeah, I know what those are.}
+
+Excellent! Let’s get started then.
+
+If you’re doing this in some kind of programming class, your instructor may have
+provided you with a zip file (or similar) containing SnakeGame and pyglet.
+If so, follow their instructions for setting it up, and head straight on to
+Your First Bot.
+
+Otherwise, you’ll need to first install the code. The latest version of
+SnakeGame is available in a Mercurial repository at
+\url{http://hg.flowblok.id.au/snakegame}.
+You can install it using pip:
+\begin{shell}
 $ pip install hg+http://hg.flowblok.id.au/snakegame#egg=SnakeGame
-\end{minted}
+\end{shell}
 
-Each section starts with a Fast track note:
-if you know what you’re doing, just write a bot which moves according to what it
-says in the fast track note, and you can skip that section.
+If you wish to have a pretty graphical viewer for watching the game being
+played, you will also need to install pyglet\footnoteurl{http://pyglet.org/}
+and/or pygame\footnoteurl{http://pygame.org}.
+
+\subsection{Skipping ahead}
+
+If you already know Python, you will probably want to skip some sections of this
+tutorial. To make this easier, there is a \emph{Fast track} note at the start of
+each section: if you can write a bot which does what it says, you can safely
+skip that section.

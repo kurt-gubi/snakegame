@@ -15,7 +15,7 @@ are.
 But rather than me just telling you what they are,
 why not have a look yourself?
 
-\pythonfile{print\_bot.py}
+\pythonfile{print_bot.py}
 
 You should see something like this (on a 4x3 board):
 \begin{minted}{pytb}
@@ -31,15 +31,15 @@ AssertionError: Return value should be a string.
 \end{minted}
 
 Ignore all the Exception stuff, that’s just because we didn’t return one of
-\pyinline|'L'|, \pyinline|'U'|, \pyinline|'D'| or \pyinline|'R'|.
-The first line is our position: it’s a \pyinline|tuple| of the x and y
+\py|'L'|, \py|'U'|, \py|'D'| or \py|'R'|.
+The first line is our position: it’s a \py|tuple| of the x and y
 coordinates of our snake’s head.
 The second line is the board: it’s a list of each row in the board,
 and each row is a list of the cells in that row.
 
 Notice that if we index the board first by the y coordinate and then by the x
 coordinate, we can get the character in the board where our snake is:
-\pyinline|board[y][x] == board[2][1] == 'A'|.
+\py|board[y][x] == board[2][1] == 'A'|.
 The head of our snake is always an uppercase character in the board,
 and the rest of our body (the tail) are always lowercase characters.
 
@@ -131,9 +131,9 @@ cell.
 Remember that our board is a list of rows (stacked vertically),
 and each row is a list of cells (stacked horizontally).
 So we need to first find the right row, which we will do by using the y
-coordinate: \pyinline|board[y]|.
+coordinate: \py|board[y]|.
 Then we need to find the right cell in the row, using the x coordinate:
-\pyinline|board[y][(x + 1) % width]|.
+\py|board[y][(x + 1) % width]|.
 
 We’re almost at the end: all we need to do is build up a list of each cell we
 can move into. We know that we can move into cells which are

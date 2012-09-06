@@ -26,14 +26,17 @@ def main(argv=None):
     parser.add_argument(
         '-w', '--width',
         default=30,
+        type=int,
     )
     parser.add_argument(
         '-h', '--height',
         default=20,
+        type=int,
     )
     parser.add_argument(
         '-a', '--apples',
         default=40,
+        type=int,
     )
     parser.add_argument('bot', nargs='+')
     args = parser.parse_args(argv)

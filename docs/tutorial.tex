@@ -16,9 +16,11 @@
 \usepackage{minted}
 \usemintedstyle{tango}
 
-\newmint[pyinline]{python}{}
+\newmint[py]{python}{}
 \newminted{python}{}
 \newmintedfile{python}{}
+
+\newminted[shell]{sh}{}
 
 \setmainfont{Linux Libertine O}
 \setmonofont[AutoFakeBold]{Inconsolata}
@@ -26,9 +28,11 @@
 \setlength\parskip{2ex}
 \setlength\parindent{0mm}
 
-\widowpenalty=1000
-\clubpenalty=1000
+%\widowpenalty=1000
+%\clubpenalty=1000
 \newcommand\fasttrack[1]{\vspace{-2ex}\hfill\emph{Fast track: #1}\nopagebreak}
+
+\newcommand\footnoteurl[1]{\footnote{\url{#1}}}
 
 \begin{document}
 
@@ -51,6 +55,7 @@
 
 \input{look_ahead.tex}
 
+\break
 \input{closest_apple.tex}
 
 \end{document}

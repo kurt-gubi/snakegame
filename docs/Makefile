@@ -4,7 +4,7 @@ FILES = $(wildcard *.tex *.py)
 BUILD_FILES = $(patsubst %,${BUILD_DIR}/%,${FILES})
 
 LATEX=xelatex
-LATEX_FLAGS=-shell-escape
+LATEX_FLAGS=-shell-escape -interaction=nonstopmode
 
 .PHONY: all
 
@@ -13,7 +13,7 @@ all: tutorial.pdf
 ${BUILD_DIR}:
 	mkdir -p ${BUILD_DIR}
 
-${BUILD_DIR}/%.tex: %.tex ${BUILD_DIR}
+${BUILD_DIR}/%.tex: %.tex
 	./jinja2 --latex < $< > $@
 
 ${BUILD_DIR}/%.py: %.py
