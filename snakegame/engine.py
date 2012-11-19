@@ -61,7 +61,7 @@ class Engine(object):
             x, y = self.get_random_position()
             self.board[y][x] = common.APPLE
 
-    def add_bot(self, bot, team=None):
+    def add_bot(self, bot, team=None, colour=None):
         """
         A bot is a callable object, with this method signature:
             def bot_callable(
@@ -76,7 +76,8 @@ class Engine(object):
         letter = self.letters.pop()
 
         name = bot.__name__
-        colour = hash_colour(name)
+        if colour is None:
+            colour = hash_colour(name)
 
         position = self.replace_random(common.EMPTY, letter.upper())
         if position is None:
