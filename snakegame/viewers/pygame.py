@@ -62,7 +62,8 @@ class Viewer(object):
         self.items = {
                 common.APPLE : 'images/apple.png',
                 common.ICE_CREAM : 'images/icecream.png',
-                common.SHRINK_POTION : 'images/shrinkpotion.png'
+                common.SHRINK_POTION : 'images/shrinkpotion.png',
+                common.WALL : 'images/wall.png',
         }
         for item in self.items:
             self.items[item] = load_image(self.items[item], xscale, yscale)

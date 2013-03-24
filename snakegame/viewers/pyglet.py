@@ -62,7 +62,8 @@ class Viewer(pyglet.window.Window):
         self.images = {
                 common.APPLE : 'images/apple.png',
                 common.ICE_CREAM : 'images/icecream.png',
-                common.SHRINK_POTION : 'images/shrinkpotion.png'
+                common.SHRINK_POTION : 'images/shrinkpotion.png',
+                common.WALL : 'images/wall.png',
         }
 
         for item, location in self.images.items():
