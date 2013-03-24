@@ -12,16 +12,19 @@ directions = {
 EMPTY = '.'
 APPLE = '*'
 WALL = '#'
+ICE_CREAM = '+'
+SHRINK_POTION = '-'
+TELEPORTER = '?'
 
 is_empty = EMPTY.__eq__
 is_apple = APPLE.__eq__
 is_wall = WALL.__eq__
 
 def is_vacant(cell):
-    return cell in (EMPTY, APPLE)
+    return cell in (EMPTY, APPLE, ICE_CREAM, SHRINK_POTION, TELEPORTER)
 
 def is_blocking(cell):
-    return cell not in (EMPTY, APPLE)
+    return not is_vacant(cell)
 
 def is_snake(cell):
     return cell in alphabet

@@ -59,11 +59,20 @@ class Viewer(pyglet.window.Window):
         xscale = float(self.board_width) / self.columns
         yscale = float(self.board_height) / self.rows
 
-        self.apple = pyglet.resource.image('images/apple.png')
-        self.apple.size = scale_aspect(
-            (self.apple.width, self.apple.height),
-            (xscale, yscale)
-        )
+        self.images = {
+                common.APPLE : 'images/apple.png',
+                common.ICE_CREAM : 'images/icecream.png',
+                common.SHRINK_POTION : 'images/shrinkpotion.png'
+        }
+
+        for item, location in self.images.items():
+            image = pyglet.resource.image(location)
+            image.size = scale_aspect(
+                (image.width, image.height),
+                (xscale, yscale)
+            )
+            self.images[item] = image
+
         self.eyes = pyglet.resource.image('images/eyes.png')
         self.eyes.size = scale_aspect(
             (self.eyes.width, self.eyes.height),
@@ -95,9 +104,10 @@ class Viewer(pyglet.window.Window):
                                      ('c4B', self.EDGE_COLOR * 4))
 
                 # Draw the things on the square.
-                if cell == common.APPLE:
-                    w, h = self.apple.size
-                    self.apple.blit(left + (xscale - w) / 2.0, top - h, width=w, height=h)
+                if cell in self.images:
+                    image = self.images[cell]
+                    w, h = image.size
+                    image.blit(left + (xscale - w) / 2.0, top - h, width=w, height=h)
 
                 elif common.is_snake(cell):
                     bot = self.engine.bots[cell.lower()]
@@ -114,4 +124,3 @@ class Viewer(pyglet.window.Window):
 
     def run(self):
         pyglet.app.run()
-

@@ -59,7 +59,13 @@ class Viewer(object):
         xscale = self.board_width / self.columns
         yscale = self.board_height / self.rows
 
-        self.apple = load_image('images/apple.png', xscale, yscale)
+        self.items = {
+                common.APPLE : 'images/apple.png',
+                common.ICE_CREAM : 'images/icecream.png',
+                common.SHRINK_POTION : 'images/shrinkpotion.png'
+        }
+        for item in self.items:
+            self.items[item] = load_image(self.items[item], xscale, yscale)
         self.eyes = load_image('images/eyes.png', xscale, yscale)
 
     def draw_board(self, board):
@@ -80,8 +86,8 @@ class Viewer(object):
                                  self.EDGE_WIDTH)
 
                 # Draw the things on the square.
-                if cell == common.APPLE:
-                    self.surface.blit(self.apple, r.topleft)
+                if cell in self.items:
+                    self.surface.blit(self.items[cell], r.topleft)
 
                 elif common.is_snake(cell):
                     bot = self.engine.bots[cell.lower()]

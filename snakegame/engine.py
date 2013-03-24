@@ -15,7 +15,7 @@ HARD_TIME_LIMIT = 1.0
 class Engine(object):
     def __init__(
         self,
-        rows, columns, n_apples,
+        rows, columns, n_apples, n_ice_creams=0, n_shrink_potions=0,
         wrap=True,
         random=None,
         *args, **kwargs
@@ -29,7 +29,7 @@ class Engine(object):
         self.wrap = wrap
         self.bots = {}
 
-        self.new_game(rows, columns, n_apples)
+        self.new_game(rows, columns, n_apples, n_ice_creams, n_shrink_potions)
 
     def get_random_position(self):
         x = self.random.randrange(0, self.columns)
@@ -43,7 +43,12 @@ class Engine(object):
                 self.board[y][x] = new
                 return x, y
 
-    def new_game(self, rows, columns, n_apples):
+    def add_items(self, item, amount):
+        for i in xrange(amount):
+            x, y = self.get_random_position()
+            self.board[y][x] = item
+
+    def new_game(self, rows, columns, n_apples, n_ice_creams, n_shrink_potions):
         self.game_ticks = 0
         self.game_id = self.random.randint(0, sys.maxint)
 
@@ -57,9 +62,9 @@ class Engine(object):
 
         # make board
         self.board = [[common.EMPTY for x in xrange(columns)] for y in xrange(rows)]
-        for i in xrange(n_apples):
-            x, y = self.get_random_position()
-            self.board[y][x] = common.APPLE
+        self.add_items(common.APPLE, n_apples)
+        self.add_items(common.ICE_CREAM, n_ice_creams)
+        self.add_items(common.SHRINK_POTION, n_shrink_potions)
 
     def add_bot(self, bot, team=None, colour=None):
         """
@@ -83,7 +88,7 @@ class Engine(object):
         if position is None:
             raise KeyError, "Could not insert snake into the board."
 
-        self.bots[letter] = [bot, colour, deque([position]), team]
+        self.bots[letter] = [bot, colour, deque([position]), team, 0]
         return letter
 
     def remove_bot(self, letter):
@@ -99,7 +104,7 @@ class Engine(object):
     def update_snakes(self):
         self.game_ticks += 1
 
-        for letter, (bot, colour, path, team) in self.bots.items():
+        for letter, (bot, colour, path, team, length_delta) in self.bots.items():
             board = deepcopy(self.board)
             try:
                 x, y = path[-1]
@@ -153,13 +158,32 @@ class Engine(object):
                     # Make old head into body.
                     self.board[y][x] = letter.lower()
 
+                    # Since they added 1 to their head, we take away 1 (then do bonuses)
+                    length_delta -= 1
+
                     if oldcell == common.APPLE:
-                        # Add in an apple to compensate.
+                        length_delta += 1
                         self.replace_random(common.EMPTY, common.APPLE)
+                    elif oldcell == common.ICE_CREAM:
+                        length_delta += 3
+                        self.replace_random(common.EMPTY, common.ICE_CREAM)
+                    elif oldcell == common.SHRINK_POTION:
+                        length_delta -= 1
+                        self.replace_random(common.EMPTY, common.SHRINK_POTION)
+
+                    if length_delta > 0:
+                        length_delta -= 1
                     else:
-                        # Remove last part of snake.
-                        ox, oy = path.popleft()
-                        self.board[oy][ox] = common.EMPTY
+                        while length_delta < 0:
+                            # Remove last part of snake.
+                            length_delta += 1
+                            if len(path) > 1:
+                                ox, oy = path.popleft()
+                                self.board[oy][ox] = common.EMPTY
+
+                    # Need to put length delta back in list
+                    self.bots[letter][4] = length_delta
+
                 else:
                     self.remove_bot(letter)
 

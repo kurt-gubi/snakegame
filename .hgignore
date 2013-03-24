@@ -4,3 +4,7 @@ syntax: glob
 
 docs/build
 docs/tutorial.pdf
+
+pyglet
+old_matt.py
+matt_bot.py
