@@ -15,8 +15,8 @@ HARD_TIME_LIMIT = 1.0
 class Engine(object):
     def __init__(
         self,
-        rows, columns, n_apples, n_ice_creams=0,
-        n_shrink_potions=0, n_walls=0,
+        rows, columns, n_apples,
+        n_ice_creams=0, n_shrink_potions=0, n_walls=0,
         wrap=True,
         random=None,
         *args, **kwargs
@@ -30,8 +30,10 @@ class Engine(object):
         self.wrap = wrap
         self.bots = {}
 
-        self.new_game(rows, columns, n_apples, n_ice_creams,
-                n_shrink_potions, n_walls)
+        self.new_game(
+                rows, columns, n_apples,
+                n_ice_creams, n_shrink_potions, n_walls,
+        )
 
     def get_random_position(self):
         x = self.random.randrange(0, self.columns)
@@ -50,8 +52,11 @@ class Engine(object):
             x, y = self.get_random_position()
             self.board[y][x] = item
 
-    def new_game(self, rows, columns, n_apples, n_ice_creams,
-            n_shrink_potions, n_walls):
+    def new_game(
+            self,
+            rows, columns, n_apples,
+            n_ice_creams, n_shrink_potions, n_walls,
+    ):
         self.game_ticks = 0
         self.game_id = self.random.randint(0, sys.maxint)
 
