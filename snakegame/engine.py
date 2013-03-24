@@ -31,8 +31,8 @@ class Engine(object):
         self.bots = {}
 
         self.new_game(
-                rows, columns, n_apples,
-                n_ice_creams, n_shrink_potions, n_walls,
+            rows, columns, n_apples,
+            n_ice_creams, n_shrink_potions, n_walls,
         )
 
     def get_random_position(self):
@@ -52,10 +52,15 @@ class Engine(object):
             x, y = self.get_random_position()
             self.board[y][x] = item
 
+    def shrink(self, path):
+        if len(path) > 1:
+            x, y = path.popleft()
+            self.board[y][x] = common.EMPTY
+
     def new_game(
-            self,
-            rows, columns, n_apples,
-            n_ice_creams, n_shrink_potions, n_walls,
+        self,
+        rows, columns, n_apples,
+        n_ice_creams, n_shrink_potions, n_walls,
     ):
         self.game_ticks = 0
         self.game_id = self.random.randint(0, sys.maxint)
@@ -97,7 +102,7 @@ class Engine(object):
         if position is None:
             raise KeyError, "Could not insert snake into the board."
 
-        self.bots[letter] = [bot, colour, deque([position]), team, 0]
+        self.bots[letter] = [bot, colour, deque([position]), team]
         return letter
 
     def remove_bot(self, letter):
@@ -113,7 +118,7 @@ class Engine(object):
     def update_snakes(self):
         self.game_ticks += 1
 
-        for letter, (bot, colour, path, team, length_delta) in self.bots.items():
+        for letter, (bot, colour, path, team) in self.bots.items():
             board = deepcopy(self.board)
             try:
                 x, y = path[-1]
@@ -163,35 +168,23 @@ class Engine(object):
                     # Move snake forward.
                     self.board[ny][nx] = letter.upper()
                     path.append((nx, ny))
+                    tail = path[0]
 
                     # Make old head into body.
                     self.board[y][x] = letter.lower()
 
-                    # Since they added 1 to their head, we take away 1 (then do bonuses)
-                    length_delta -= 1
-
                     if oldcell == common.APPLE:
-                        length_delta += 1
+                        path.appendleft(tail)
                         self.replace_random(common.EMPTY, common.APPLE)
                     elif oldcell == common.ICE_CREAM:
-                        length_delta += 3
+                        for i in range(3):
+                            path.appendleft(tail)
                         self.replace_random(common.EMPTY, common.ICE_CREAM)
                     elif oldcell == common.SHRINK_POTION:
-                        length_delta -= 1
+                        self.shrink(path)
                         self.replace_random(common.EMPTY, common.SHRINK_POTION)
 
-                    if length_delta > 0:
-                        length_delta -= 1
-                    else:
-                        while length_delta < 0:
-                            # Remove last part of snake.
-                            length_delta += 1
-                            if len(path) > 1:
-                                ox, oy = path.popleft()
-                                self.board[oy][ox] = common.EMPTY
-
-                    # Need to put length delta back in list
-                    self.bots[letter][4] = length_delta
+                    self.shrink(path)
 
                 else:
                     self.remove_bot(letter)
