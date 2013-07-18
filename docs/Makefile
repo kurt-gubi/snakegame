@@ -17,7 +17,7 @@ ${BUILD_DIR}/%.tex: %.tex
 	./jinja2 --latex < $< > $@
 
 ${BUILD_DIR}/%.py: %.py
-	ln $< $@
+	ln -sf ../$< $@
 
 tutorial.pdf: ${BUILD_DIR}/tutorial.tex ${BUILD_FILES}
 	cd "${BUILD_DIR}" && \

@@ -1,5 +1,8 @@
 \documentclass[12pt]{article}
 
+\newif\ifshowcode
+\showcodefalse
+
 \usepackage{fontspec}
 
 \usepackage[pdfborder={0 0 0}]{hyperref}
@@ -55,7 +58,9 @@
 
 \input{look_ahead.tex}
 
+\ifshowcode
 \break
+\fi
 \input{closest_apple.tex}
 
 \end{document}
