@@ -1,8 +1,7 @@
 import hashlib
+from random import Random
 
 def hash_colour(data):
-    data = map(ord, hashlib.md5(data).digest())
-    colour = data[::3], data[1::3], data[2::3]
-    colour = map(sum, colour)
-    return (colour[0] % 255, colour[1] % 255, colour[2] % 255)
-
+    n = int(hashlib.md5(data.encode('utf-8')).hexdigest(), 16)
+    r = Random(n)
+    return r.randrange(256), r.randrange(256), r.randrange(256)
