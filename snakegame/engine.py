@@ -2,9 +2,11 @@ from collections import defaultdict, deque
 from copy import deepcopy
 from random import Random
 from string import ascii_lowercase as lowercase
-import sys
 import time
 import traceback
+
+import six
+from six.moves import xrange
 
 from snakegame.colour import hash_colour
 from snakegame import common
@@ -63,7 +65,6 @@ class Engine(object):
         n_ice_creams, n_shrink_potions, n_walls,
     ):
         self.game_ticks = 0
-        self.game_id = self.random.randint(0, sys.maxint)
 
         self.letters = list(lowercase)
         self.letters.reverse()
@@ -100,7 +101,7 @@ class Engine(object):
 
         position = self.replace_random(common.EMPTY, letter.upper())
         if position is None:
-            raise KeyError, "Could not insert snake into the board."
+            raise KeyError("Could not insert snake into the board.")
 
         self.bots[letter] = [bot, colour, deque([position]), team]
         return letter
@@ -118,7 +119,7 @@ class Engine(object):
     def update_snakes(self):
         self.game_ticks += 1
 
-        for letter, (bot, colour, path, team) in self.bots.items():
+        for letter, (bot, colour, path, team) in list(self.bots.items()):
             board = deepcopy(self.board)
             try:
                 x, y = path[-1]
@@ -142,10 +143,10 @@ class Engine(object):
                 delta = end - start
                 assert delta < HARD_TIME_LIMIT, 'Exceeded hard time limit.'
                 if delta >= SOFT_TIME_LIMIT:
-                    print 'Bot %s (%r) exceeded soft time limit.' % (letter.upper(), bot)
+                    print('Bot %s (%r) exceeded soft time limit.' % (letter.upper(), bot))
 
                 # Sanity checking...
-                assert isinstance(d, basestring), \
+                assert isinstance(d, six.string_types), \
                     "Return value should be a string."
                 d = d.upper()
                 assert d in common.directions, "Return value should be 'U', 'D', 'L' or 'R'."
@@ -177,7 +178,7 @@ class Engine(object):
                         path.appendleft(tail)
                         self.replace_random(common.EMPTY, common.APPLE)
                     elif oldcell == common.ICE_CREAM:
-                        for i in range(3):
+                        for i in xrange(3):
                             path.appendleft(tail)
                         self.replace_random(common.EMPTY, common.ICE_CREAM)
                     elif oldcell == common.SHRINK_POTION:
@@ -190,10 +191,10 @@ class Engine(object):
                     self.remove_bot(letter)
 
             except:
-                print "Exception in bot %s (%s):" % (letter.upper(), bot)
-                print '-'*60
+                print("Exception in bot %s (%s):" % (letter.upper(), bot))
+                print('-'*60)
                 traceback.print_exc()
-                print '-'*60
+                print('-'*60)
                 self.remove_bot(letter)
 
     def __iter__(self):

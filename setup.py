@@ -8,6 +8,9 @@ setup(
     author_email='peteraward@gmail.com',
     packages=['snakegame'],
     zip_safe=False,
+    install_requires=[
+        'six',
+    ],
     package_data={
         'snakegame': 'images/*.png',
     },
