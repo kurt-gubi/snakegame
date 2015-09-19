@@ -42,7 +42,7 @@ class Viewer(pyglet.window.Window):
         if columns != self.columns or rows != self.rows:
             self.columns = columns
             self.rows = rows
-            self.on_resize(self.width, self.height)
+            self.set_size(self.width, self.height)
 
     def on_resize(self, width, height):
         super(Viewer, self).on_resize(width, height)

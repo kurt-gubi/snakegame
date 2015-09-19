@@ -2,6 +2,7 @@ from collections import defaultdict, deque
 from copy import deepcopy
 from random import Random
 from string import ascii_lowercase as lowercase
+import sys
 import time
 import traceback
 
@@ -191,10 +192,10 @@ class Engine(object):
                     self.remove_bot(letter)
 
             except:
-                print("Exception in bot %s (%s):" % (letter.upper(), bot))
-                print('-'*60)
+                sys.stderr.write("Exception in bot %s (%s):\n" % (letter.upper(), bot))
+                sys.stderr.write('-'*60+'\n')
                 traceback.print_exc()
-                print('-'*60)
+                sys.stderr.write('-'*60+'\n')
                 self.remove_bot(letter)
 
     def __iter__(self):
