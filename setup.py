@@ -10,6 +10,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'six',
+        'pyglet',
     ],
     package_data={
         'snakegame': ['images/*.png'],
