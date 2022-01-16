@@ -1,9 +1,0 @@
-syntax: glob
-*~
-*.py[co]
-
-docs/build
-docs/tutorial.pdf
-
-pyglet
-*_bot.py

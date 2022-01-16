@@ -1,0 +1,5 @@
+build
+SnakeGame.egg-info
+__pycache__
+
+*_bot.py
