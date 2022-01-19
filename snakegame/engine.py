@@ -5,6 +5,7 @@ from string import ascii_lowercase as lowercase
 import sys
 import time
 import traceback
+from enum import Enum
 
 import six
 from six.moves import xrange
@@ -14,6 +15,24 @@ from snakegame import common
 
 SOFT_TIME_LIMIT = 0.5
 HARD_TIME_LIMIT = 1.0
+
+class SnakeColour(Enum):
+  BLACK    	  = (0,0,0)
+  WHITE    	  = (255,255,255)
+  RED 	      = (255,0,0)
+  LIME 	      = (0,255,0)
+  BLUE 	      = (0,0,255)
+  YELLOW   	  = (255,255,0)
+  CYAN 	      = (0,255,255)
+  MAGENTA    	= (255,0,255)
+  SILVER   	  = (192,192,192)
+  GRAY 	      = (128,128,128)
+  MAROON   	  = (128,0,0)
+  OLIVE    	  = (128,128,0)
+  GREEN    	  = (0,128,0)
+  PURPLE   	  = (128,0,128)
+  TEAL 	      = (0,128,128)
+  NAVY 	      = (0,0,128)
 
 class Engine(object):
     def __init__(

@@ -88,10 +88,14 @@ def bfs_bot(board, position):
     
   choices = ['U', 'D', 'L', 'R']
   weights = [weights['U'], weights['D'], weights['L'], weights['R']]
-  return random.choices(choices, weights=weights, k=1)[0]
+  
+  if sum(weights) > 0:
+    return random.choices(choices, weights=weights, k=1)[0]
+  else:
+    return random.choice(choices)
 
 if __name__ == '__main__':
   engine = Engine(10, 10, 25)
   engine.add_bot(bfs_bot)
-  viewer = Viewer(engine, speed=0.2)
+  viewer = Viewer(engine)
   viewer.run()
