@@ -13,7 +13,7 @@ class Viewer(pyglet.window.Window):
     EDGE_COLOR = (255, 255, 255, 255)
     EDGE_WIDTH = 2
 
-    def __init__(self, engine, caption='SnakeGame Window', resizable=True, **kwargs):
+    def __init__(self, engine, caption='SnakeGame Window', resizable=True, speed=1/30.0, **kwargs):
         super(Viewer, self).__init__(
             caption=caption,
             resizable=resizable,
@@ -26,7 +26,7 @@ class Viewer(pyglet.window.Window):
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
 
-        pyglet.clock.schedule_interval(lambda t: self.update_snakes(), 1/30.0)
+        pyglet.clock.schedule_interval(lambda t: self.update_snakes(), speed)
 
         self.board = None
         self.columns = None
